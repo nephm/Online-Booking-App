@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Court Booking</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="dashboard-container">    
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">CourtBooker</div>
+                <div class="nav-links">
+                    <a href="venues.html" class="nav-link">Venues</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contacts.html" class="nav-link">Contacts</a>
+                    <div class="auth-buttons">
+                        <a href="login.html" class="auth-btn login btn">Login</a>
+                        <a href="register.html" class="auth-btn register btn">Register</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="container">
+            <h2>Register Your Account</h2>
+            <div class ="form-wrapper">
+                <form action="" method="post">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                    
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" required>
+                    
+                    <input type="submit" value="Sign Up">
+
+                    <h3>Already have an account? <a href="login.html">Login</a></h3>
+                </form>
+            <div>
+        </div>
+    </div>
+</body>
+
+</html>
