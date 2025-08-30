@@ -393,10 +393,9 @@ body {
 }
 
 .container input[type="submit"]:hover {
-    background-color: #e0a00f;
+    background-color: #481fa8;
 }
 
-/* Links and Additional Info */
 .container h3 {
     margin-top: 20px;
     font-size: 14px;
@@ -410,3 +409,4 @@ body {
 .container h3 a:hover {
     text-decoration: underline;
 }
+

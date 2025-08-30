@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-jdbc</artifactId>
-		</dependency>
+		</dependency> 
 
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>

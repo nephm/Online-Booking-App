@@ -1,3 +1,4 @@
 com/uts/Online/Booking/App/OnlineBookingAppApplication.class
+com/uts/Online/Booking/App/config/SecurityConfig.class
 com/uts/Online/Booking/App/HomeController.class
 com/uts/Online/Booking/App/controller/LoginController.class
