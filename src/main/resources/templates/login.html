@@ -14,15 +14,6 @@
         <header class="header">
             <nav class="nav">
                 <div class="logo">CourtBooker</div>
-                <div class="nav-links">
-                    <a href="venues.html" class="nav-link">Venues</a>
-                    <a href="about.html" class="nav-link">About</a>
-                    <a href="contacts.html" class="nav-link">Contacts</a>
-                    <div class="auth-buttons">
-                        <a href="login.html" class="auth-btn login btn">Login</a>
-                        <a href="register.html" class="auth-btn register btn">Register</a>
-                    </div>
-                </div>
             </nav>
         </header>
         
@@ -30,12 +21,12 @@
         <h2>Login</h2>
         <div class="form-wrapper">
             <form method="post" action="/login">
-                <input type="text" name="username" placeholder="Email" required>
+                <input type="text" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit">Login</button>
             </form>
         </div>
-        <button class="register-button" onclick="window.location.href='register.html'">Register</button>
+        <button class="register-button" onclick="window.location.href='/register'">Register</button>
     </div>
          
         

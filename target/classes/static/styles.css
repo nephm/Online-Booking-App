@@ -34,6 +34,17 @@ body {
     box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
 }
 
+button {
+    background-color: #4a30cd; 
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
 .nav {
     display: flex;
     justify-content: space-between;
@@ -381,7 +392,7 @@ body {
 /* Submit Button */
 .container input[type="submit"] {
     width: 100%;
-    background-color: #FEBE10;
+    background-color: #481fa8;
     color: white;
     padding: 10px;
     border: none;
@@ -410,3 +421,50 @@ body {
     text-decoration: underline;
 }
 
+/*profile*/
+.profile-menu{
+    position: relative;
+    display: inline-block;
+}
+
+.profile-btn{
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.icon{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.dropdown{
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.dropdown a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown a:hover{
+    background: #f0f0f0;
+}
+
+.profile-menu:hover .dropdown{
+    display: block;
+}
