@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.uts.Online.Booking.App.OnlineBookingAppApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.288 s -- in com.uts.Online.Booking.App.OnlineBookingAppApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.329 s -- in com.uts.Online.Booking.App.OnlineBookingAppApplicationTests
