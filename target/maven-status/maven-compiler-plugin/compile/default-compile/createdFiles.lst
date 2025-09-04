@@ -1,2 +1,3 @@
 com/uts/Online/Booking/App/OnlineBookingAppApplication.class
 com/uts/Online/Booking/App/HomeController.class
+com/uts/Online/Booking/App/controller/AdminController.class
