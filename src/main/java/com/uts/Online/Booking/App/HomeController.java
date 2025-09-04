@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.servlet.http.HttpSession;
 
 
 
@@ -45,5 +46,17 @@ public class HomeController {
         
         m.addAttribute("message", "User registered" + email);
         return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logoutPage(){
+        return "logout";
+    }
+
+    @PostMapping("/logout")
+    public String logoutprocess(HttpSession session) {
+        
+        session.invalidate();
+        return "logout";
     }
 }

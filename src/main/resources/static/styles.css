@@ -422,7 +422,7 @@ button {
 }
 
 /*profile*/
-.profile-menu{
+.profile{
     position: relative;
     display: inline-block;
 }
@@ -465,6 +465,12 @@ button {
     background: #f0f0f0;
 }
 
-.profile-menu:hover .dropdown{
+.profile:hover .dropdown{
     display: block;
+}
+
+/* logout*/
+.logout{
+    text-align: center;
+    margin-top: 100px;
 }
