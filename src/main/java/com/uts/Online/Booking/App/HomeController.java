@@ -17,6 +17,16 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/admin")
+    public String admin() {
+        return "admin";
+    }
+
+    @GetMapping("/main")
+    public String main() {
+        return "main";
+    }
+
     @GetMapping("/login")
     public String showLogin() {
         return "login"; // looks in templates/login.html

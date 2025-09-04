@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Court Booking - Admin</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="dashboard-container">    
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">CourtBooker</div>
+            </nav>
+        </header>
+        <div class="admin-table-container">
+            <h2 class="table-title">ADMIN - Court Bookings</h2>
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Location</th>
+                        <th>Court Number</th>
+                        <th>Date & Time</th>
+                        <th>Duration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <tr>
+                        <td>BK001</td>
+                        <td>Elite Centre</td>
+                        <td>1</td>
+                        <td>Sept 5, 2025 - 10:00 AM</td>
+                        <td>2 hours</td>
+                        <td>
+                            <button class="action-btn" onclick="editBooking("")">Edit</button>
+                            <button class="action-btn" onclick="deleteBooking("")">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>BK002</td>
+                        <td>Sports Plex</td>
+                        <td>2</td>
+                        <td>Sept 5, 2025 - 2:00 PM</td>
+                        <td>1.5 hours</td>
+                        <td>
+                            <button class="action-btn" onclick="editBooking("")">Edit</button>
+                            <button class="action-btn" onclick="deleteBooking("")">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>BK003</td>
+                        <td>Elite Centre</td>
+                        <td>6</td>
+                        <td>Sept 6, 2025 - 9:00 AM</td>
+                        <td>3 hours</td>
+                        <td>
+                            <button class="action-btn" onclick="editBooking("")">Edit</button>
+                            <button class="action-btn" onclick="deleteBooking("")">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>BK004</td>
+                        <td>Sports Plex</td>
+                        <td>4</td>
+                        <td>Sept 6, 2025 - 4:00 PM</td>
+                        <td>2 hours</td>
+                        <td>
+                            <button class="action-btn" onclick="editBooking("")">Edit</button>
+                            <button class="action-btn" onclick="deleteBooking("")">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>BK005</td>
+                        <td>Sports Plex</td>
+                        <td>7</td>
+                        <td>Sept 7, 2025 - 11:00 AM</td>
+                        <td>1 hour</td>
+                        <td>
+                            <button class="action-btn" onclick="editBooking("")">Edit</button>
+                            <button class="action-btn" onclick="deleteBooking("")">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            
+        </div>
+    </div>
+</body>
+
+</html>
