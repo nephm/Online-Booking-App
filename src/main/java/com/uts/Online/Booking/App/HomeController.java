@@ -71,4 +71,9 @@ public class HomeController {
         session.invalidate();
         return "logout";
     }
+
+    @GetMapping("/court")
+    public String court() {
+        return "court";
+    }
 }
