@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Court Booking</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+
+    <body>
+        <h1>Badminton Court Booking</h1>
+        <table id="bookingTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>10:00am</th>
+                    <th>11:00am</th>
+                    <th>12:00pm</th>
+                    <th>1:00pm</th>
+                    <th>2:00pm</th>
+                    <th>3:00pm</th>
+                    <th>4:00pm</th>
+                    <th>5:00pm</th>
+                    <th>6:00pm</th>
+                    <th>7:00pm</th>
+                    <th>8:00pm</th>
+                    <th>9:00pm</th>
+                    <th>10:00pm</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+            <tfoot>
+                <tr class="price-row">
+                    <td></td>
+                    <td>$31</td><td>$31</td><td>$31</td><td>$31</td>
+                    <td>$31</td><td>$37</td><td>$37</td><td>$37</td>
+                    <td>$37</td><td>$37</td><td>$37</td><td>$16</td>
+                </tr>
+            </tfoot>
+        </table>
+        <script>
+            const courts = 10;
+            const slots = [
+                "10:00am","11:00am","12:00pm","1:00pm","2:00pm","3:00pm",
+                "4:00pm","5:00pm","6:00pm","7:00pm","8:00pm","9:00pm","10:00pm"
+            ];
+            const bookings = Array.from({length: courts}, () =>
+                Array.from({length: slots.length}, () => Math.random() < 0.5)
+            );
+
+            const tbody = document.getElementById('tableBody');
+            for (let i = 0; i < courts; i++) {
+                const tr = document.createElement('tr');
+                const tdLabel = document.createElement('td');
+                tdLabel.textContent = `Court ${i+1}`;
+                tdLabel.className = 'court-label';
+                tr.appendChild(tdLabel);
+
+                for (let j = 0; j < slots.length; j++) {
+                    const td = document.createElement('td');
+                    td.className = bookings[i][j] ? 'booked' : 'available';
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+        </script>
+    </body>
+</html>
