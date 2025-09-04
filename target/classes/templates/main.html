@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Court Booking</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">CourtBooker</div>
+                <div class="nav-links">
+                    <a href="venues.html" class="nav-link">Venues</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contacts.html" class="nav-link">Contacts</a>
+
+                    <div class="profile">
+                        <button class="profile-btn">
+                            <img src="images/userProfile_logo.jpg" alt="User icon" class="icon">
+                            <span class="username">Hi, </span>
+                        </button>
+                        <div class="dropdown">
+                            <a href="profile.html">My Profile</a>
+                            <a href="bookings.html">My Bookings</a>
+                            <a href="settings.html">Settings</a>
+                            <a href="logout.html">Logout</a>
+                    </div>
+                </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="hero-section">
+                <h1 class="hero-title">Book Your Perfect Badminton Court</h1>
+                <p class="hero-subtitle">Find and reserve courts at top venues near you.</p>
+
+                
+
+                <div class="action-buttons">
+                    <a href="booking.html" class="btn btn-primary pulse">Book Now</a>
+                    <a href="venues.html" class="btn btn-secondary">Explore Venues</a>
+                </div>
+            </div>
+
+            <div class="venue-section" id="venues">
+                <h2 class="venue-title">Popular Venues</h2>
+                <div class="venue-grid">
+                    <div class="venue-card" onclick="selectVenue('elite')">
+                        <div class="venue-name">Elite Badminton Center</div>
+                        <div class="venue-info">📍 Downtown • Premium facilities</div>
+                        <div class="venue-courts">8 Courts Available</div>
+                    </div>
+
+                    <div class="venue-card" onclick="selectVenue('sports')">
+                        <div class="venue-name">SportsPlex Arena</div>
+                        <div class="venue-info">📍 North District • Family friendly</div>
+                        <div class="venue-courts">12 Courts Available</div>
+                    </div>
+
+                    <div class="venue-card" onclick="selectVenue('champion')">
+                        <div class="venue-name">Champion Courts</div>
+                        <div class="venue-info">📍 East Side • Tournament grade</div>
+                        <div class="venue-courts">6 Courts Available</div>
+                    </div>
+
+                    <div class="venue-card" onclick="selectVenue('city')">
+                        <div class="venue-name">City Badminton Hub</div>
+                        <div class="venue-info">📍 Central • 24/7 Access</div>
+                        <div class="venue-courts">10 Courts Available</div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>
