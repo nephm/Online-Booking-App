@@ -4,6 +4,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -55,5 +58,17 @@ public class HomeController {
         
         m.addAttribute("message", "User registered" + email);
         return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logoutPage(){
+        return "logout";
+    }
+
+    @PostMapping("/logout")
+    public String logoutprocess(HttpSession session) {
+        
+        session.invalidate();
+        return "logout";
     }
 }
