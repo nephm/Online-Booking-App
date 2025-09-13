@@ -1,83 +1,104 @@
-// package com.uts.Online.Booking.App.model;
+package com.uts.Online.Booking.App.model;
 
-// import jakarta.persistence.*;
+import jakarta.persistence.*;
+import java.io.Serializable;
 
-// @Entity
-// @Table(name ="users")
-// public class User {
+@Entity
+@Table(name ="users")
+public class User implements Serializable{
     
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-//     private String firstName;
-//     private String lastName;
+    private String firstName;
+    private String lastName;
 
-//     @Column(nullable = false, unique = true)
-//     private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-//     @Column(nullable = false)
-//     private String password;
-//     private int phoneNumber;
+    @Column(nullable = false)
+    private String password;
+    private int phoneNumber;
 
-//     // Constructors
-//     public User() {}
+    private boolean isActive = false;
 
-//     public User(Long id, String firstName, String lastName, String email, String password, int phoneNumber) {
-//         this.id = id;
-//         this.firstName = firstName;
-//         this.lastName = lastName;
-//         this.email = email;
-//         this.password = password;
-//         this.phoneNumber = phoneNumber;
-//     }
+    private String activationToken;
 
-//     // Getters and Setters
-//     public Long getId() {
-//         return id;
-//     }
+    // Constructors
+    public User() {}
 
-//     public void setId(Long id) {
-//         this.id = id;
-//     }
+    public User(Long id, String firstName, String lastName, String email, String password, int phoneNumber) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
 
-//     public String getFirstName() {
-//         return firstName;
-//     }
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-//     public void setFirstName(String firstName) {
-//         this.firstName = firstName;
-//     }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-//     public String getlastName() {
-//         return lastName;
-//     }
+    public String getFirstName() {
+        return firstName;
+    }
 
-//     public void setlastName(String lastName) {
-//         this.lastName = lastName;
-//     }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-//     public String getEmail() {
-//         return email;
-//     }
+    public String getlastName() {
+        return lastName;
+    }
 
-//     public void setEmail(String email) {
-//         this.email = email;
-//     }
+    public void setlastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-//     public String getPassword() {
-//         return password;
-//     }
+    public String getEmail() {
+        return email;
+    }
 
-//     public void setPassword(String password) {
-//         this.password = password;
-//     }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-//     public int getPhoneNumber() {
-//         return phoneNumber;
-//     }
+    public String getPassword() {
+        return password;
+    }
 
-//     public void setPhoneNumber(int phoneNumber) {
-//         this.phoneNumber = phoneNumber;
-//     }
-// }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public String getActivationToken() {
+        return activationToken;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public void setActivationToken(String verificationToken) {
+        this.activationToken = verificationToken;
+    }
+}
