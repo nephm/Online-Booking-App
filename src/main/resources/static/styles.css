@@ -555,3 +555,8 @@ button {
         padding: 4px 2px;
     }
 }
+
+.registration-email{
+    text-align: center;
+    margin-top: 100px;
+}

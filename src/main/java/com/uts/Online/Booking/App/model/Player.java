@@ -3,7 +3,6 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name ="Player")
 public class Player extends User {
 
     private Long paymentId;

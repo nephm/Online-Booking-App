@@ -4,10 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.uts.Online.Booking.App.model.Player;
-import java.util.Optional;
 
+import org.springframework.lang.NonNull;
 @Repository
 public interface PlayerDAO extends JpaRepository<Player, Long> {
-    boolean existsByPlayerId(Long userId);
+    boolean existsById(@NonNull Long Id);
     
 }

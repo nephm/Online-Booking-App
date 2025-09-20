@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name ="users")
+@Table(name ="Users")
 public class User implements Serializable{
     
     @Id
@@ -54,11 +54,11 @@ public class User implements Serializable{
         this.firstName = firstName;
     }
 
-    public String getlastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setlastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
