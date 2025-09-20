@@ -76,24 +76,4 @@ public class HomeController {
     public String getVenues() {
         return "venues";
     }
-    
-    @GetMapping("/courttwo")
-    public String courttwo() {
-        return "courttwo";
-    }
-    
-    @GetMapping("/courtthree")
-    public String courtthree() {
-        return "courtthree";
-    }
-
-    @GetMapping("/courtfour")
-    public String courtfour() {
-        return "courtfour";
-    }
-
-    @GetMapping("/courtfive")
-    public String courtfive() {   
-        return "courtfive";
-    }
 }
