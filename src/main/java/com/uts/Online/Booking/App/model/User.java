@@ -11,7 +11,10 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="first_name")
     private String firstName;
+
+     @Column(name="last_name")
     private String lastName;
 
     @Column(nullable = false, unique = true)
@@ -19,16 +22,20 @@ public class User implements Serializable{
 
     @Column(nullable = false)
     private String password;
-    private int phoneNumber;
 
+    @Column(name="phone_number")
+    private String phoneNumber;
+
+    @Column(name="is_active")
     private boolean isActive = false;
 
+    @Column(name="activation_token")
     private String activationToken;
 
     // Constructors
     public User() {}
 
-    public User(Long id, String firstName, String lastName, String email, String password, int phoneNumber) {
+    public User(Long id, String firstName, String lastName, String email, String password, String phoneNumber) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -78,11 +85,11 @@ public class User implements Serializable{
         this.password = password;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

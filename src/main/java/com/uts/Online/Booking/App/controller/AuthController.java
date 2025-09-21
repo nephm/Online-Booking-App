@@ -32,12 +32,7 @@ public class AuthController {
     }
     
     @GetMapping("/login")
-    public String showLogin() {
-        return "login"; // looks in templates/login.html
-    }
-
-    @PostMapping("/login")
-    public String login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, Model m, HttpSession session) {
+    public String showLogin(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, Model m, HttpSession session) {
         
         if (error != null) {
             m.addAttribute("error", "Invalid email or password");
@@ -45,8 +40,7 @@ public class AuthController {
         if (logout != null) {
             m.addAttribute("message", "You have been logged out successfully");
         }
-
-        return "login";  
+        return "login"; // looks in templates/login.html
     }
 
     private void sendEmail(String to, String subject, String text){
@@ -83,7 +77,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public String RegisterUser(@RequestParam("firstName") String fname, @RequestParam("lastName") String lname, @RequestParam("email") String email, @RequestParam("password") String password, 
-    @RequestParam("phoneNumber") int phoneNumber, Model m, HttpSession session){
+    @RequestParam("phoneNumber") String phoneNumber, Model m, HttpSession session){
 
         if(userDAO.findByEmail(email).isPresent()){
             m.addAttribute("error", "Email already exists!");

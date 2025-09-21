@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class Admin extends User{
     
-    public Admin(Long id, String firstName, String lastName, String email, String password, int phoneNumber){
+    public Admin(Long id, String firstName, String lastName, String email, String password, String phoneNumber){
         super(id, firstName, lastName, email, password, phoneNumber);
     }
     

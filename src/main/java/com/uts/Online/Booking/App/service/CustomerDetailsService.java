@@ -8,15 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.DAO.AdminDAO;
-import com.uts.Online.Booking.App.model.Admin;
 import com.uts.Online.Booking.App.model.User;
 
 @Service
-public class UserService implements UserDetailsService {
+public class CustomerDetailsService implements UserDetailsService {
     private final UserDAO userDAO;
     private final AdminDAO adminDAO;
 
-    public UserService(UserDAO userDAO, AdminDAO adminDAO) {
+    public CustomerDetailsService(UserDAO userDAO, AdminDAO adminDAO) {
         this.userDAO = userDAO;
         this.adminDAO = adminDAO;
     }

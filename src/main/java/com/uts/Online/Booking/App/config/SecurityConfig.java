@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.uts.Online.Booking.App.service.UserService;
+import com.uts.Online.Booking.App.service.CustomerDetailsService;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,9 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class SecurityConfig {
 
-    private final UserService userService;
+    private final CustomerDetailsService userService;
 
-    public SecurityConfig(UserService userService) {
+    public SecurityConfig(CustomerDetailsService userService) {
         this.userService = userService;
     }
     
@@ -24,7 +24,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/index", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll().anyRequest().authenticated())
+                .requestMatchers("/", "/index", "/login", "/register", "/court", "/css/**", "/js/**", "/images/**", "/error").permitAll().anyRequest().authenticated())
                 .formLogin(form -> form
                     .loginPage("/login")
                     .defaultSuccessUrl("/main", true)

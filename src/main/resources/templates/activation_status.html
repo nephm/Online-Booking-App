@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Account Activation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation Status</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script src="/js/script.js" defer></script>
 </head>
 <body>
     <div th:if="${status == 'success'}" style="color: green;">
