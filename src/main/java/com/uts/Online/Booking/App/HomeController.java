@@ -72,8 +72,8 @@ public class HomeController {
         return "logout";
     }
 
-    @GetMapping("/court")
-    public String court() {
-        return "court";
+    @GetMapping("/venues")
+    public String getVenues() {
+        return "venues";
     }
 }
