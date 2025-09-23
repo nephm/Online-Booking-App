@@ -23,8 +23,8 @@ public class HomeController {
         return "main";
     }
 
-    @GetMapping("/court")
-    public String court() {
-        return "court";
+    @GetMapping("/venues")
+    public String getVenues() {
+        return "venues";
     }
 }
