@@ -3,7 +3,7 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name ="players")
+@Table(name ="players", schema ="dbo")
 public class Player extends User {
 
     @Column(name="payment_id")

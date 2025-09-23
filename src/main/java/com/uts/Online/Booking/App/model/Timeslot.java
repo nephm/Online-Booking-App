@@ -3,7 +3,7 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Timeslots")
+@Table(name = "Timeslots", schema ="dbo")
 public class Timeslot {
 
     @Id

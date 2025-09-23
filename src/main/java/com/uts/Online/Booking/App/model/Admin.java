@@ -3,7 +3,7 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name ="admins")
+@Table(name ="admins", schema ="dbo")
 public class Admin extends User{
 
     public Admin(){ super(); }

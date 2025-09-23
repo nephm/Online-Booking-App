@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name ="users")
+@Table(name ="users", schema ="dbo")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable{
     
