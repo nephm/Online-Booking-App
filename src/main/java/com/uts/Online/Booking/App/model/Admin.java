@@ -3,10 +3,13 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name ="admins")
 public class Admin extends User{
+
+    public Admin(){ super(); }
     
-    public Admin(Long id, String firstName, String lastName, String email, String password, String phoneNumber){
-        super(id, firstName, lastName, email, password, phoneNumber);
+    public Admin(String firstName, String lastName, String email, String password, String phoneNumber){
+        super(firstName, lastName, email, password, phoneNumber);
     }
     
 }

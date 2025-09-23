@@ -109,4 +109,10 @@ public class AuthController {
 
         return "redirect:/registration_email";
     }
+
+    @GetMapping("/registration_email")
+    public String getRegistrationEmailPage() {
+        return "registration_email";
+    }
+    
 }

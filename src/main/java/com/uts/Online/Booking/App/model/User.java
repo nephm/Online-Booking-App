@@ -4,26 +4,28 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name ="Users")
+@Table(name ="users")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name ="userID")
+    private int id;
 
-    @Column(name="first_name")
+    @Column(name="user_fname")
     private String firstName;
 
-     @Column(name="last_name")
+     @Column(name="user_lname")
     private String lastName;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="user_email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name="password", nullable = false)
     private String password;
 
-    @Column(name="phone_number")
+    @Column(name="user_phone")
     private String phoneNumber;
 
     @Column(name="is_active")
@@ -35,8 +37,7 @@ public class User implements Serializable{
     // Constructors
     public User() {}
 
-    public User(Long id, String firstName, String lastName, String email, String password, String phoneNumber) {
-        this.id = id;
+    public User(String firstName, String lastName, String email, String password, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -45,11 +46,11 @@ public class User implements Serializable{
     }
 
     // Getters and Setters
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

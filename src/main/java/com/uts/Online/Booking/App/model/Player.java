@@ -3,28 +3,28 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name ="players")
 public class Player extends User {
 
-    private Long paymentId;
+    @Column(name="payment_id")
+    private int paymentId;
+
+    @Column(name="address")
     private String address;
     
-    public Player(Long id, String firstName, String lastName, String email, String password, String phoneNumber, Long paymentId, String address) {
-        super(id, firstName, lastName, email, password, phoneNumber);
-        this.paymentId = paymentId;
-        this.address = address;
-    }
+    public Player(){ super(); }
 
     //new customer
-    public Player(Long id, String firstName, String lastName, String email, String password, String phoneNumber, String address) {
-        super(id, firstName, lastName, email, password, phoneNumber);
+    public Player(String firstName, String lastName, String email, String password, String phoneNumber, String address) {
+        super( firstName, lastName, email, password, phoneNumber);
         this.address = address;
     }
 
-    public Long getPaymentId() {
+    public int getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(Long paymentId) {
+    public void setPaymentId(int paymentId) {
         this.paymentId = paymentId;
     }
 

@@ -7,7 +7,7 @@ import com.uts.Online.Booking.App.model.User;
 import java.util.Optional;
 
 @Repository
-public interface UserDAO extends JpaRepository<User, Long> {
+public interface UserDAO extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
     User findByActivationToken(String Token);
     

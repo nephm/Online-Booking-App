@@ -7,7 +7,7 @@ import com.uts.Online.Booking.App.model.Player;
 
 import org.springframework.lang.NonNull;
 @Repository
-public interface PlayerDAO extends JpaRepository<Player, Long> {
+public interface PlayerDAO extends JpaRepository<Player, Integer> {
     boolean existsById(@NonNull Long Id);
     
 }

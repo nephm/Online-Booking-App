@@ -13,10 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class SecurityConfig {
 
-    private final CustomerDetailsService userService;
+    private final CustomerDetailsService userDetailService;
 
-    public SecurityConfig(CustomerDetailsService userService) {
-        this.userService = userService;
+    public SecurityConfig(CustomerDetailsService userDetailService) {
+        this.userDetailService = userDetailService;
     }
     
     @Bean
@@ -24,7 +24,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/index", "/login", "/register", "/court", "/css/**", "/js/**", "/images/**", "/error").permitAll().anyRequest().authenticated())
+                .requestMatchers("/", "/index", "/login", "/register", "/venues", "/court", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll().anyRequest().authenticated())
                 .formLogin(form -> form
                     .loginPage("/login")
                     .defaultSuccessUrl("/main", true)
@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID", "BADMINSESSION")
-                .permitAll());
+                .permitAll())
+                .userDetailsService(userDetailService);
         return http.build();
     }
 
