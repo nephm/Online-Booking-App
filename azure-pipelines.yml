@@ -8,7 +8,12 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+
+
 steps:
+
+# set up maven cache folder
+
 
 # cache maven packages
 - task: Cache@2
@@ -17,7 +22,7 @@ steps:
     restoreKeys: |
       maven | "$(Agent.OS)"
       maven
-    path: ~/.m2/repository
+    path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven packages
 
 #clean and compile
