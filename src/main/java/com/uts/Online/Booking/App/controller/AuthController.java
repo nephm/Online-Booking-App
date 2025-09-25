@@ -89,6 +89,11 @@ public class AuthController {
             return "register";
         }
 
+        if(phoneNumber.length() < 10 || phoneNumber.length() > 15 || phoneNumber.matches(".*[a-zA-Z]+.*")){
+            m.addAttribute("error", "Phone number is invalid");
+            return "register";
+        }
+
         User newUser = new User();
         newUser.setFirstName(fname);
         newUser.setLastName(lname);

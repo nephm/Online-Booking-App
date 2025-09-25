@@ -11,7 +11,11 @@ public class Player extends User {
 
     @Column(name="address")
     private String address;
+
+    @Column(name="creditBalance", nullable = false)
+    private double creditBalance = 0.0;
     
+
     public Player(){ super(); }
 
     //new customer
@@ -36,5 +40,11 @@ public class Player extends User {
         this.address = address;
     }
 
-    
+    public double getCreditBalance() {
+        return creditBalance;
+    }
+
+    public void setCreditBalance(double creditBalance) {
+        this.creditBalance = creditBalance;
+    }
 }

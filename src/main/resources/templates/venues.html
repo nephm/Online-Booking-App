@@ -4,24 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badminton Court Booking</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/script.js}" defer></script>
 </head>
 
     <body>
         <div class="dashboard-container">
         <header class="header">
             <nav class="nav">
-                <div class="logo">CourtBooker</div>
+                <div class="logo"><a href="/main">CourtBooker</a></div>
                 <div class="nav-links">
-                    <a href="/venues" class="nav-link">Venues</a>
-                    <a href="/admin" class="nav-link">ADMINNN</a>
-                    <a href="/court" class="nav-link">COURTTT</a>
-                    <a href="about.html" class="nav-link">About</a>
-                    <a href="contacts.html" class="nav-link">Contacts</a>
-                    <div class="auth-buttons">
-                        <a href="/login" class="auth-btn login-btn">Login</a>
-                        <a href="/register" class="auth-btn register-btn">Register</a>
+                    <div class="profile">
+                        <button class="profile-btn" onclick="window.location.href='/profile'">
+                            <img src="images/userProfile_logo.jpg" alt="User icon" class="icon">
+                        </button>
                     </div>
                 </div>
             </nav>

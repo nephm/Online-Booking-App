@@ -458,36 +458,16 @@ button {
     font-size: 1rem;
 }
 
-.icon{
+.profile-btn .icon{
     width: 32px;
     height: 32px;
     border-radius: 50%;
     margin-right: 8px;
+    color: #fff;
 }
 
-.dropdown{
-    display: none;
-    position: absolute;
-    right: 0;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    overflow: hidden;
-    z-index: 1000;
-}
 
-.dropdown a {
-    display: block;
-    padding: 10px;
-    color: #333;
-    text-decoration: none;
-}
-
-.dropdown a:hover{
-    background: #f0f0f0;
-}
-
-.profile:hover .dropdown{
+.profile-btn:hover{
     display: block;
 }
 

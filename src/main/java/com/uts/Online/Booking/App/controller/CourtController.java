@@ -24,53 +24,6 @@ import java.time.format.DateTimeFormatter;
 @Controller
 public class CourtController {
 
-    /*@Autowired
-    private CourtDAO courtDAO;
-    
-    @Autowired
-    private TimeslotDAO timeslotDAO;
-    
-    @Autowired
-    private BookingDAO bookingDAO;
-
-    @GetMapping("/court")
-    public String showCourts(Model model, 
-                           @RequestParam(required = false) String date) {
-        // Get selected date or use today
-        LocalDate selectedDate = date != null ? LocalDate.parse(date) : LocalDate.now();
-
-        // Get all courts and timeslots
-        List<Court> courts = courtDAO.findAll();
-        List<Timeslot> timeslots = timeslotDAO.findAll();
-        
-        // Get bookings for selected date
-        List<Booking> bookings = bookingDAO.findBookingsForDate(selectedDate);
-        
-        // Create header slots
-        List<String> headerSlots = timeslots.stream()
-        .map(slot -> {
-            LocalTime time = LocalTime.parse(slot.getStart_time());
-            return DateTimeFormatter.ofPattern("HH:mm").format(time);
-        })
-        .collect(Collectors.toList());
-
-        model.addAttribute("headerSlots", headerSlots);
-
-        // Create availability map
-        Map<String, Boolean> availability = new HashMap<>();
-        bookings.forEach(booking -> {
-            String key = booking.getCourt().getCourt_id() + "-" + booking.getTimeslot().getTimeslot_id();
-            availability.put(key, false); // false means booked
-        });
-
-        model.addAttribute("courts", courts);
-        model.addAttribute("timeSlots", timeslots);
-        model.addAttribute("availability", availability);
-        model.addAttribute("selectedDate", selectedDate);
-
-        return "court";
-    }*/
-
     @Autowired
     private CourtDAO courtDAO;
 

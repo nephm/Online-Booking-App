@@ -23,21 +23,32 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/index", "/login", "/register", "/venues", "/court", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll().anyRequest().authenticated())
+                    .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/", "/index", "/login", "/register", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+                )
                 .formLogin(form -> form
                     .loginPage("/login")
-                    .defaultSuccessUrl("/main", true)
+                    .successHandler((request, respone, authentication) ->{
+                        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                            respone.sendRedirect("/admin/dashboard");  
+                        } else {
+                            respone.sendRedirect("/main");
+                        }
+                    })
                     .failureUrl("/login?error=true")
                     .permitAll()
                 )
                 .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "BADMINSESSION")
-                .permitAll())
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "BADMINSESSION")
+                    .permitAll()
+                )
                 .userDetailsService(userDetailService);
+
         return http.build();
     }
 
