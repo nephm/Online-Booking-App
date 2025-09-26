@@ -1,2 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Payment</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/payment.css}" rel="stylesheet">
+    <script th:src="@{/js/script.js}" defer></script>
+</head>
+<body>
+    <form th:action="@{/pay}" method="post" class="payment-form">
+        <h2>Payment Details</h2>
+        <input type="hidden" name="bookingId" th:value="${bookingId}">
+        <input type="hidden" name="amount" th:value="${amount}">
+
+        <p>Total amount: $<span th:text="${amount}"></span></p>
+
+        <select name="paymentType" required>
+            <option value="CREDIT_CARD">Credit Card</option>
+            <option value="CREDIT_BALANCE" th:if="${creditBalance != null}">Credit Balance ($<span th:text="${creditBalance}"></span>)</option>
+        </select>
+
+        <div th:if="${paymentType == 'CREDIT_CARD'}">
+            <input type="text" name="creditCardNumber" placeholder="Card Number" required>
+            <input type="text" name="creditCardExpiry" placeholder="Expiry Date (MM/YY)" required>
+            <input type="text" name="creditCardSecurityCode" placeholder="Security Code" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Pay Now</button>
+    </form>
+</body>

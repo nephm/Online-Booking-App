@@ -4,6 +4,7 @@ package com.uts.Online.Booking.App.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,59 +12,77 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+
 import com.uts.Online.Booking.App.DAO.PaymentDAO;
+import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.Payment;
 import com.uts.Online.Booking.App.model.PaymentType;
 import com.uts.Online.Booking.App.model.Player;
+import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
 
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.ui.Model;
 
+@Controller
+@RequestMapping("/payment")
 public class PaymentController {
     
-    @Autowired
     private final PaymentDAO paymentDAO;
+    private final UserDAO userDAO;
 
     @Autowired
     private final CustomerDetailsService userService;
 
-    public PaymentController (PaymentDAO paymentDAO, CustomerDetailsService userService){
+    public PaymentController (PaymentDAO paymentDAO, CustomerDetailsService userService, UserDAO userDAO){
         this.paymentDAO = paymentDAO;
         this.userService = userService;
+        this.userDAO = userDAO;
     }
 
     //get payment details by paymentId
     @GetMapping("/{paymentId}")
-    public Payment getPayment(@PathVariable Integer paymentId){
-        return paymentDAO.findById(paymentId).orElse(null);
+    public String getPayment(@PathVariable Integer paymentId, Model m){
+        Payment payment = paymentDAO.findById(paymentId).orElse(null);
+        m.addAttribute("payment", payment);
+        return "payment/details";
 
     }
 
     //get all payment history
     @GetMapping("/myPayments")
-    public List<Payment> getPayment(){
+    public String getPayment(Model m){
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String uName = auth.getName();
-        Integer userId = 1;
+        User u = userDAO.findByEmail(auth.getName()).orElse(null);
 
-        return paymentDAO.findByUserId(userId);
+        if(u != null){
+            List<Payment> payments = paymentDAO.findByUserId(u.getId());
+            m.addAttribute("payments", payments);
+            m.addAttribute("user", u);
+        }
+
+        return "payment/history";
 
     }
 
     @PostMapping("/pay")
-    public Payment processPayment(@RequestParam Integer bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
-                @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m, HttpSession session) {
+    public String processPayment(@RequestParam Integer bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
+                @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String uName = auth.getName();
-        Integer userId = 1;
+        User u = userDAO.findByEmail(auth.getName()).orElse(null);
         
+        if(u == null){
+            m.addAttribute("user", u);
+            return "payment/error";
+        }
+
         Payment payment = new Payment();
         payment.setBookingId(bookingId);
-        payment.setUserId(1);
+        payment.setUserId(u.getId());
         payment.setAmount(amount);
         payment.setCreatedAt(LocalDateTime.now());
 
@@ -75,18 +94,34 @@ public class PaymentController {
             payment.setCreditCardSecurityCode(creditCardSecurityCode);
             payment.setStatus("SUCCESS");
         } else if (type == PaymentType.CREDIT_BALANCE){
-            Player player = userService.findById(userId);
-            if(player.getCreditBalance() >= amount){
-                player.setCreditBalance(player.getCreditBalance() - amount);
-                payment.setPaymentType(PaymentType.CREDIT_BALANCE);
-                payment.setStatus("SUCCESS");
+            if(u instanceof Player){
+                Player player = (Player) u;
+                if(player.getCreditBalance() >= amount){
+                    player.setCreditBalance(player.getCreditBalance() - amount);
+                    userDAO.save(player);
+                    payment.setPaymentType(PaymentType.CREDIT_BALANCE);
+                    payment.setStatus("SUCCESS");
+                } else{
+                    payment.setPaymentType(PaymentType.CREDIT_BALANCE);
+                    payment.setStatus("FAILED");
+                    m.addAttribute("error", "Insufficient credit available");
+                }
             } else{
-                payment.setPaymentType(PaymentType.CREDIT_BALANCE);
                 payment.setStatus("FAILED");
+                m.addAttribute("error", "User is not a player");
             }
-    
         }
-        return paymentDAO.save(payment);
+
+        Payment saved_payment = paymentDAO.save(payment);
+        m.addAttribute("payment", saved_payment);
+
+        if("SUCESS".equals(saved_payment.getStatus())){
+            m.addAttribute("success", "Payment processed sucessfully");
+        } else{
+            m.addAttribute("failed", "Payment failed");
+        }
+        
+        return "payment_status";
     }
 
 }
