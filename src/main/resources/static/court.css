@@ -1,57 +1,234 @@
-/* Timeslot Checkboxes styled like booking cells */
-.timeslot-box {
-    appearance: none; /* remove default checkbox */
-    -webkit-appearance: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    border: 2px solid rgba(99, 102, 241, 0.5);
+/* Date Filter */
+.date-filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+.date-filter-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.date-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(168, 85, 247, 0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.date-select:hover {
+    border-color: #A855F7;
+    background: rgba(168, 85, 247, 0.1);
+}
+
+.date-select:focus {
+    outline: none;
+    border-color: #A855F7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #e2e8f0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-available {
+    background: #22c55e;
+}
+
+.legend-selected {
+    background: linear-gradient(135deg, #6366F1, #A855F7);
+}
+
+.legend-booked {
+    background: #6b7280;
+}
+
+/* Booking table styles */
+#bookingTable {
+    width: 100%;
+    border-collapse: collapse;
     background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+#bookingTable thead {
+    background: linear-gradient(135deg, #6366F1, #A855F7);
+}
+
+#bookingTable th {
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+}
+
+#bookingTable tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#bookingTable tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.court-label {
+    padding: 15px;
+    font-weight: 600;
+    color: #A855F7;
+    text-align: center;
+    background: rgba(168, 85, 247, 0.1);
+}
+
+#bookingTable td {
+    padding: 8px;
+    text-align: center;
+}
+
+/* Solid color block styles for timeslots */
+.timeslot-block {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.25s ease;
     position: relative;
+    margin: 0;
 }
 
-/* Hover effect */
-.timeslot-box:hover:not(:disabled) {
-    background: rgba(99, 102, 241, 0.2);
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-    transform: scale(1.05);
+/* Available slot - light green */
+.timeslot-block:not(:disabled):not(:checked) {
+    background: #22c55e;
+    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
 }
 
-/* Checked (booked by user) */
-.timeslot-box:checked {
+.timeslot-block:not(:disabled):not(:checked):hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Selected slot - purple theme */
+.timeslot-block:checked {
     background: linear-gradient(135deg, #6366F1, #A855F7);
-    border-color: #A855F7;
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.6);
 }
 
-/* Add a tick mark inside when checked */
-.timeslot-box:checked::after {
-    content: "✔";
+.timeslot-block:checked::after {
+    content: "✓";
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -60%);
-    font-size: 1rem;
-    color: #fff;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
 }
 
-/* Disabled timeslot (already booked) */
-.timeslot-box:disabled {
-    background: rgba(168, 85, 247, 0.25);
-    border: 2px solid rgba(168, 85, 247, 0.4);
+/* Booked/disabled slot - grey */
+.timeslot-block:disabled {
+    background: #6b7280;
     cursor: not-allowed;
     opacity: 0.7;
+    box-shadow: none;
 }
 
-/* Responsive tweak so checkboxes don’t look too big on mobile */
-@media (max-width: 600px) {
-    .timeslot-box {
-        width: 20px;
-        height: 20px;
+.timeslot-block:disabled::after {
+    content: "✕";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: #374151;
+}
+
+/* Proceed button */
+.proceed-btn {
+    background: linear-gradient(135deg, #6366F1, #A855F7);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 30px;
+}
+
+.proceed-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .nav-links {
+        flex-direction: column;
+        gap: 15px;
     }
-    .timeslot-box:checked::after {
-        font-size: 0.8rem;
+
+    .venues-title {
+        font-size: 28px;
+    }
+
+    .date-filter-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #bookingTable th,
+    #bookingTable td {
+        padding: 8px 4px;
+        font-size: 12px;
+    }
+
+    .timeslot-block {
+        height: 35px;
+    }
+
+    .court-label {
+        font-size: 14px;
+    }
+
+    .legend {
+        gap: 15px;
+    }
+
+    .legend-item {
+        font-size: 12px;
     }
 }
