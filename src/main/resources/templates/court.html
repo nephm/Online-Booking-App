@@ -18,47 +18,64 @@
             </nav>
         </header>
 
-        <h1 class="venues-title">Elite Badminton Center</h1>
+    <h1 class="venues-title">Elite Badminton Center</h1>
 
-        <form method="get" th:action="@{/venue/__${venue.venueId}__/courts}">
-            <label for="date">Select Date:</label>
-            <select id="date" name="date" onchange="this.form.submit()">
-                <option th:each="day : ${#numbers.sequence(1,30)}"
-                        th:value="${'2025-09-' + (day < 10 ? '0' + day : day)}"
-                        th:text="${'Sep ' + day}"
-                        th:selected="${selectedDate == T(java.time.LocalDate).parse('2025-09-' + (day < 10 ? '0' + day : day))}">
-                </option>
-            </select>
-        </form>
+    <!-- Date Filter -->
+    <form method="get" th:action="@{/venue/__${venue.venueId}__/courts}" class="date-filter-container">
+        <label for="date" class="date-filter-label">Select Date:</label>
+        <select id="date" name="date" class="date-select" onchange="this.form.submit()">
+            <option th:each="day : ${#numbers.sequence(1,30)}"
+                    th:value="${'2025-09-' + (day < 10 ? '0' + day : day)}"
+                    th:text="${'Sep ' + day}"
+                    th:selected="${selectedDate == T(java.time.LocalDate).parse('2025-09-' + (day < 10 ? '0' + day : day))}">
+            </option>
+        </select>
+    </form>
 
-        <!-- Booking table -->
-        <form th:action="@{/book}" method="post">
-            <table id="bookingTable">
-                <thead>
-                    <tr>
-                        <th>Court</th>
-                        <th th:each="slot : ${headerSlots}" th:text="${slot}"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="court : ${courts}">
-                        <td class="court-label" th:text="${court.court_name}"></td>
-
-                        <td th:each="slot : ${timeSlots}">
-                            <input type="checkbox"
-                                name="selectedSlots"
-                                th:value="${court.court_id + '-' + slot.timeslot_id + '-' + selectedDate}"
-                                th:disabled="${availability[court.court_id + '-' + slot.timeslot_id]} == false" 
-                                class="timeslot-box"/>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div style="margin-top: 20px; text-align: center;">
-                <button type="submit" class="proceed-btn">Proceed to Book</button>
-            </div>
-        </form>
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color legend-available"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-selected"></div>
+            <span>Selected</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-booked"></div>
+            <span>Booked</span>
+        </div>
     </div>
-    </body>
+
+    <!-- Booking table -->
+    <form th:action="@{/book}" method="post">
+        <table id="bookingTable">
+            <thead>
+                <tr>
+                    <th>Court</th>
+                    <th th:each="slot : ${headerSlots}" th:text="${slot}"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="court : ${courts}">
+                    <td class="court-label" th:text="${court.court_name}"></td>
+    
+                    <td th:each="slot : ${timeSlots}">
+                        <input type="checkbox"
+                            name="selectedSlots"
+                            th:value="${court.court_id + '-' + slot.timeslot_id + '-' + #temporals.format(selectedDate, 'yyyy-MM-dd')}"
+                            th:disabled="${availability[court.court_id + '-' + slot.timeslot_id]} == false" 
+                            class="timeslot-block"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <div style="margin-top: 20px; text-align: center;">
+            <button type="submit" class="proceed-btn">Proceed to Book</button>
+        </div>
+    </form>
+</div>
+</body>
 </html>

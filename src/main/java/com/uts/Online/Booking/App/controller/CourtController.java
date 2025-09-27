@@ -36,7 +36,6 @@ public class CourtController {
     @Autowired
     private VenueDAO venueDAO;
 
-    // ✅ ONE method for all venues
     @GetMapping("/venue/{venueId}/courts")
     public String showVenueCourts(@PathVariable Long venueId,
                                 @RequestParam(required = false) String date,
