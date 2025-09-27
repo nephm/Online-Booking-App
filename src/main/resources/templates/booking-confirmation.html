@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation - CourtBooker</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+    <link th:href="@{/court.css}" rel="stylesheet">
+    <link th:href="@{/confirmation.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">CourtBooker</div>
+                <div class="nav-links">
+                    <a th:href="@{/venues}" class="nav-link">Venues</a>
+                    <a th:href="@{/admin}" class="nav-link">Admin</a>
+                    <a th:href="@{/court}" class="nav-link">Courts</a>
+                    <a th:href="@{/about}" class="nav-link">About</a>
+                    <a th:href="@{/contacts}" class="nav-link">Contacts</a>
+                    <div class="auth-buttons">
+                        <a th:href="@{/login}" class="auth-btn login-btn">Login</a>
+                        <a th:href="@{/register}" class="auth-btn register-btn">Register</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="confirmation-container">
+            <!-- Success Confirmation -->
+            <div class="confirmation-header">
+                <div class="success-icon">✓</div>
+                <h1 class="confirmation-title">Booking Confirmed!</h1>
+                <p class="confirmation-subtitle">Your court reservation has been successfully processed.</p>
+            </div>
+
+            <div class="booking-reference">
+                <strong>Booking Reference:</strong> #<span th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'yyyyMMddHHmmss')}">202509261234</span>
+            </div>
+
+            <div class="booking-details">
+                <h3>Booking Summary</h3>
+                
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <div class="booking-info-item">
+                            <span class="booking-info-label">Number of Slots Booked</span>
+                            <span class="booking-info-value" th:text="${bookingCount ?: 1}">1</span>
+                        </div>
+                        
+                        <div class="booking-info-item">
+                            <span class="booking-info-label">Status</span>
+                            <span class="booking-info-value" style="color: #22c55e; font-weight: bold;">CONFIRMED</span>
+                        </div>
+                        
+                        <div class="booking-info-item">
+                            <span class="booking-info-label">Booking Timestamp</span>
+                            <span class="booking-info-value" th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'MMMM dd, yyyy HH:mm')}">September 26, 2025 14:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-message">
+                <strong>✓ Success!</strong> <span th:text="${success ?: 'Your booking has been confirmed successfully!'}">Your booking has been confirmed successfully!</span>
+            </div>
+
+            <div class="important-notes">
+                <strong>Important Notes:</strong>
+                <ul>
+                    <li>Please arrive 15 minutes before your scheduled time</li>
+                    <li>Bring appropriate sports attire and equipment</li>
+                    <li>Cancellations must be made at least 2 hours in advance</li>
+                    <li>Save this confirmation for your records</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <a th:href="@{/venues}" class="btn btn-primary">Book Another Court</a>
+                <a th:href="@{/}" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

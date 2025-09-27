@@ -1,0 +1,220 @@
+.confirmation-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.confirmation-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #22c55e;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+.confirmation-title {
+    color: #A855F7;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.confirmation-subtitle {
+    color: #e2e8f0;
+    font-size: 1.2rem;
+}
+
+.booking-details {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.booking-details h3 {
+    color: #A855F7;
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.booking-item {
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.booking-item:last-child {
+    margin-bottom: 0;
+}
+
+.booking-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.booking-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.booking-info-label {
+    font-weight: bold;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.booking-info-value {
+    color: #e2e8f0;
+    font-size: 1rem;
+}
+
+.action-buttons {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 0 0.5rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6366F1, #A855F7);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.booking-reference {
+    background: rgba(99, 102, 241, 0.1);
+    border-left: 4px solid #6366F1;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 6px;
+}
+
+.booking-reference strong {
+    color: #6366F1;
+    font-weight: 600;
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.error-message strong {
+    color: #ef4444;
+}
+
+.success-message {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    color: #86efac;
+}
+
+.success-message strong {
+    color: #22c55e;
+}
+
+.important-notes {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    color: #fbbf24;
+}
+
+.important-notes strong {
+    color: #f59e0b;
+}
+
+.important-notes ul {
+    margin: 0.5rem 0 0 1.5rem;
+    color: #e2e8f0;
+}
+
+.important-notes li {
+    margin-bottom: 0.3rem;
+}
+
+/* Status styling */
+.booking-info-value[style*="color: #28a745"] {
+    color: #22c55e !important;
+    font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .confirmation-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .confirmation-title {
+        font-size: 2rem;
+    }
+
+    .success-icon {
+        font-size: 3rem;
+    }
+
+    .booking-info {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        display: block;
+        margin: 0.5rem 0;
+        width: 100%;
+    }
+
+    .action-buttons {
+        margin-top: 1.5rem;
+    }
+}

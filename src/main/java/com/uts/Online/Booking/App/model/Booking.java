@@ -63,4 +63,16 @@ public class Booking {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Column(name = "userid", nullable = false)
+    private Long userid;
+
+    public Long getUserid() {
+        return userid;
+    }
+
+    public void setUserid(Long userid) {
+        this.userid = userid;
+    }
+
 }
