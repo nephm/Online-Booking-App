@@ -8,19 +8,19 @@
     <script th:src="@{/js/script.js}" defer></script>
 </head>
 <body>
-    <form th:action="@{/pay}" method="post" class="payment-form">
+    <form th:action="@{/process}" method="post" class="payment-form">
         <h2>Payment Details</h2>
         <input type="hidden" name="bookingId" th:value="${bookingId}">
         <input type="hidden" name="amount" th:value="${amount}">
 
         <p>Total amount: $<span th:text="${amount}"></span></p>
 
-        <select name="paymentType" required>
+        <select id="paymentType" name="type" required onchange="toggleFields()">
             <option value="CREDIT_CARD">Credit Card</option>
             <option value="CREDIT_BALANCE" th:if="${creditBalance != null}">Credit Balance ($<span th:text="${creditBalance}"></span>)</option>
         </select>
 
-        <div th:if="${paymentType == 'CREDIT_CARD'}">
+        <div id="cardFields">
             <input type="text" name="creditCardNumber" placeholder="Card Number" required>
             <input type="text" name="creditCardExpiry" placeholder="Expiry Date (MM/YY)" required>
             <input type="text" name="creditCardSecurityCode" placeholder="Security Code" required>

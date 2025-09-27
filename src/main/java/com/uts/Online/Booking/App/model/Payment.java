@@ -9,11 +9,11 @@ public class Payment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int paymentId;
+    private Long paymentId;
 
-    private int bookingId;
+    private Long bookingId;
 
-    private int userId;
+    private Long userId;
 
     private double amount;
 
@@ -32,27 +32,27 @@ public class Payment {
 
     public Payment() {}
 
-    public int getPaymentId() {
+    public Long getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(int paymentId) {
+    public void setPaymentId(Long paymentId) {
         this.paymentId = paymentId;
     }
 
-    public int getBookingId() {
+    public Long getBookingId() {
         return bookingId;
     }
 
-    public void setBookingId(int bookingId) {
+    public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
     }
 
-    public int getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -111,6 +111,4 @@ public class Payment {
     public void setPaymentType(PaymentType paymentType) {
         this.paymentType = paymentType;
     }
-
-
 }

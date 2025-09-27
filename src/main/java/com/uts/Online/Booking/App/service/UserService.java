@@ -14,7 +14,7 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public User findById(Integer id){
+    public User findById(Long id){
         return userDAO.findById(id).orElse(null);
     }
 

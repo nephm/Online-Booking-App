@@ -109,9 +109,15 @@ public class AuthController {
         userDAO.save(newUser);
 
         //send notification
-        String activationLink = "http://localhost:8080/activate?token=" + token;
-        sendEmail(email, "Account Activation", "Click the link to activate your account: " + activationLink);
+        try {
+            String activationLink = "http://localhost:8080/activate?token=" + token;
+            sendEmail(email, "Account Activation", "Click the link to activate your account: " + activationLink);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            m.addAttribute("error", "failed to send activation email.");
+            return "register";
+        }
         return "redirect:/registration_email";
     }
 

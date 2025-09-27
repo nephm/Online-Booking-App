@@ -21,12 +21,10 @@ import com.uts.Online.Booking.App.model.User;
 @Service
 public class CustomerDetailsService implements UserDetailsService {
     private final UserDAO userDAO;
-    private final AdminDAO adminDAO;
     private final PlayerDAO playerDAO;
 
     public CustomerDetailsService(UserDAO userDAO, AdminDAO adminDAO, PlayerDAO playerDAO) {
         this.userDAO = userDAO;
-        this.adminDAO = adminDAO;
         this.playerDAO = playerDAO;
     }
 
@@ -59,10 +57,10 @@ public class CustomerDetailsService implements UserDetailsService {
     }
 
     public String getUsername(){
-        return userDAO.findById((int) 1L).map(User::getFirstName).orElse("defaultUser");
+        return userDAO.findById((Long) 1L).map(User::getFirstName).orElse("defaultUser");
     }
 
-    public Player findById(Integer id){
+    public Player findById(Long id){
         return playerDAO.findById(id).orElse(null);
     }
 

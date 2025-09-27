@@ -8,7 +8,6 @@ import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
 
 import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +20,28 @@ public class BookingService {
     private CourtDAO courtDAO;
     @Autowired
     private TimeslotDAO timeslotDAO;
+    
 
-    public void createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, long userId) {
-    Court court = courtDAO.findById(courtId).orElseThrow();
-    Timeslot timeslot = timeslotDAO.findById(timeslotId).orElseThrow();
-    Booking booking = new Booking();
-    booking.setCourt(court);
-    booking.setTimeslot(timeslot);
-    booking.setBooking_date(bookingDate);
-    booking.setStatus("BOOKED");
-    booking.setUserid(userId);
-    bookingDAO.save(booking);
-}
+    public Long createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
+        Court court = courtDAO.findById(courtId).orElseThrow();
+        Timeslot timeslot = timeslotDAO.findById(timeslotId).orElseThrow();
+        Booking booking = new Booking();
+        booking.setCourt(court);
+        booking.setTimeslot(timeslot);
+        booking.setBooking_date(bookingDate);
+        booking.setStatus("BOOKED");
+        booking.setUserid(userId);
+        Booking savedBooking = bookingDAO.save(booking);
+
+        return savedBooking.getBooking_id();
+    }
+
+    // update booking after payment
+    public void updateBookingStatus(Long bookingId, String status){
+        Booking booking = bookingDAO.findById(bookingId).orElseThrow();
+        booking.setStatus(status);
+        bookingDAO.save(booking);
+    }
+
+    
 }

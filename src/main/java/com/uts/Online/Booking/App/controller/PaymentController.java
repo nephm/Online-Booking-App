@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,31 +19,47 @@ import com.uts.Online.Booking.App.model.Payment;
 import com.uts.Online.Booking.App.model.PaymentType;
 import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.model.User;
+import com.uts.Online.Booking.App.service.BookingService;
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
-
-import jakarta.servlet.http.HttpSession;
 
 import org.springframework.ui.Model;
 
 @Controller
-@RequestMapping("/payment")
+@RequestMapping("/")
 public class PaymentController {
     
     private final PaymentDAO paymentDAO;
     private final UserDAO userDAO;
+    private final BookingService bookingService;
 
-    @Autowired
-    private final CustomerDetailsService userService;
-
-    public PaymentController (PaymentDAO paymentDAO, CustomerDetailsService userService, UserDAO userDAO){
+    public PaymentController (PaymentDAO paymentDAO, CustomerDetailsService userService, UserDAO userDAO, BookingService bookingService){
         this.paymentDAO = paymentDAO;
-        this.userService = userService;
         this.userDAO = userDAO;
+        this.bookingService = bookingService;
     }
+
+    //show payment form
+    @GetMapping("/payment")
+    public String showPaymentForm(@RequestParam Long bookingId, @RequestParam Double amount, Model m) {
+        m.addAttribute("bookingId", bookingId);
+        m.addAttribute("amount", amount);
+        m.addAttribute("paymentTypes", PaymentType.values());
+
+        //get current user's credit balance if required
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User u = userDAO.findByEmail(auth.getName()).orElse(null);
+
+        if(u instanceof Player){
+            m.addAttribute("creditBalance", ((Player) u).getCreditBalance());
+        }
+
+        return "payment";
+    }
+    
 
     //get payment details by paymentId
     @GetMapping("/{paymentId}")
-    public String getPayment(@PathVariable Integer paymentId, Model m){
+    public String getPayment(@PathVariable Long paymentId, Model m){
         Payment payment = paymentDAO.findById(paymentId).orElse(null);
         m.addAttribute("payment", payment);
         return "payment/details";
@@ -68,8 +83,8 @@ public class PaymentController {
 
     }
 
-    @PostMapping("/pay")
-    public String processPayment(@RequestParam Integer bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
+    @PostMapping("/process")
+    public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
                 @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -115,13 +130,13 @@ public class PaymentController {
         Payment saved_payment = paymentDAO.save(payment);
         m.addAttribute("payment", saved_payment);
 
-        if("SUCESS".equals(saved_payment.getStatus())){
-            m.addAttribute("success", "Payment processed sucessfully");
+        if("SUCCESS".equals(saved_payment.getStatus())){
+            bookingService.updateBookingStatus(bookingId, "CONFIRMED");
+            return "redirect:/booking-confirmation";
         } else{
-            m.addAttribute("failed", "Payment failed");
+            bookingService.updateBookingStatus(bookingId, "FAILED");
+            return "payment/failed";
         }
-        
-        return "payment_status";
     }
 
 }
