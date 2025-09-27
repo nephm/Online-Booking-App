@@ -23,7 +23,6 @@ public class Booking {
     private LocalDate bookingDate;
     private String status;
 
-    // --- Getters & Setters ---
     public Long getBooking_id() {
         return booking_id;
     }

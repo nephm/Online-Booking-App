@@ -21,7 +21,6 @@ public class Timeslot {
         this.end_time = end_time;
     }
 
-    // Getters and setters
     public Long getTimeslot_id() {
         return timeslot_id;
     }

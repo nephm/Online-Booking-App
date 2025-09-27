@@ -30,7 +30,6 @@ public class Court {
         this.available = available;
     }
 
-    // Getters and setters
     public Long getCourt_id() {
         return court_id;
     }

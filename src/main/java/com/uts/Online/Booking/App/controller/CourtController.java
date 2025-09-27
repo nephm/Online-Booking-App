@@ -24,53 +24,6 @@ import java.time.format.DateTimeFormatter;
 @Controller
 public class CourtController {
 
-    /*@Autowired
-    private CourtDAO courtDAO;
-    
-    @Autowired
-    private TimeslotDAO timeslotDAO;
-    
-    @Autowired
-    private BookingDAO bookingDAO;
-
-    @GetMapping("/court")
-    public String showCourts(Model model, 
-                           @RequestParam(required = false) String date) {
-        // Get selected date or use today
-        LocalDate selectedDate = date != null ? LocalDate.parse(date) : LocalDate.now();
-
-        // Get all courts and timeslots
-        List<Court> courts = courtDAO.findAll();
-        List<Timeslot> timeslots = timeslotDAO.findAll();
-        
-        // Get bookings for selected date
-        List<Booking> bookings = bookingDAO.findBookingsForDate(selectedDate);
-        
-        // Create header slots
-        List<String> headerSlots = timeslots.stream()
-        .map(slot -> {
-            LocalTime time = LocalTime.parse(slot.getStart_time());
-            return DateTimeFormatter.ofPattern("HH:mm").format(time);
-        })
-        .collect(Collectors.toList());
-
-        model.addAttribute("headerSlots", headerSlots);
-
-        // Create availability map
-        Map<String, Boolean> availability = new HashMap<>();
-        bookings.forEach(booking -> {
-            String key = booking.getCourt().getCourt_id() + "-" + booking.getTimeslot().getTimeslot_id();
-            availability.put(key, false); // false means booked
-        });
-
-        model.addAttribute("courts", courts);
-        model.addAttribute("timeSlots", timeslots);
-        model.addAttribute("availability", availability);
-        model.addAttribute("selectedDate", selectedDate);
-
-        return "court";
-    }*/
-
     @Autowired
     private CourtDAO courtDAO;
 
@@ -83,12 +36,10 @@ public class CourtController {
     @Autowired
     private VenueDAO venueDAO;
 
-    // ✅ ONE method for all venues
     @GetMapping("/venue/{venueId}/courts")
     public String showVenueCourts(@PathVariable Long venueId,
                                 @RequestParam(required = false) String date,
                                 Model model) {
-        // Get selected date or use today
         LocalDate selectedDate;
         try {
             selectedDate = date != null ? LocalDate.parse(date) : LocalDate.now();
@@ -96,22 +47,17 @@ public class CourtController {
             selectedDate = LocalDate.now();
         }
 
-        // Get venue info
         Venue venue = venueDAO.findById(venueId).orElse(null);
         if (venue == null) {
             return "redirect:/venues";
         }
 
-        // Get courts for this venue
         List<Court> courts = courtDAO.findByVenueVenueId(venueId);
         
-        // Get all timeslots
         List<Timeslot> timeslots = timeslotDAO.findAll();
-        
-        // Get bookings for selected date
+
         List<Booking> bookings = bookingDAO.findBookingsForDate(selectedDate);
 
-        // Format header slots
         List<String> headerSlots = timeslots.stream()
             .map(slot -> {
                 LocalTime time = LocalTime.parse(slot.getStart_time());
@@ -119,10 +65,9 @@ public class CourtController {
             })
             .collect(Collectors.toList());
 
-        // Create availability map
         Map<String, Boolean> availability = new HashMap<>();
         
-        // Initialize all slots as available
+        // Making all slots availablt
         courts.forEach(court -> {
             timeslots.forEach(slot -> {
                 String key = court.getCourt_id() + "-" + slot.getTimeslot_id();
@@ -130,13 +75,12 @@ public class CourtController {
             });
         });
 
-        // Mark booked slots
+        // Mark all booked slots
         bookings.forEach(booking -> {
             String key = booking.getCourt().getCourt_id() + "-" + booking.getTimeslot().getTimeslot_id();
             availability.put(key, false);
         });
 
-        // Add everything to model
         model.addAttribute("venue", venue);
         model.addAttribute("courts", courts);
         model.addAttribute("timeSlots", timeslots);
