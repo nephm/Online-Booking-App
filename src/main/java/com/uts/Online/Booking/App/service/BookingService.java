@@ -8,6 +8,8 @@ import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,23 @@ public class BookingService {
         Booking booking = bookingDAO.findById(bookingId).orElseThrow();
         booking.setStatus(status);
         bookingDAO.save(booking);
+    }
+
+    //calculate total amount for multiple slots
+    public Double calculateTotalAmount(List<String> selectedSlots){
+        return selectedSlots.stream()
+            .mapToDouble(slot ->{
+                String[] parts = slot.split("-", 3);
+                
+                if (parts.length != 3) {
+                    return 0.0;
+                }
+                
+                Long courtId = Long.parseLong(parts[0]);
+                Court court = courtDAO.findById(courtId).orElse(null);
+                return court != null ? court.getHourly_rate() : 0.0;
+            })
+            .sum();
     }
 
     

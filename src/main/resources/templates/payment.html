@@ -20,10 +20,22 @@
             <option value="CREDIT_BALANCE" th:if="${creditBalance != null}">Credit Balance ($<span th:text="${creditBalance}"></span>)</option>
         </select>
 
-        <div id="cardFields">
-            <input type="text" name="creditCardNumber" placeholder="Card Number" required>
-            <input type="text" name="creditCardExpiry" placeholder="Expiry Date (MM/YY)" required>
-            <input type="text" name="creditCardSecurityCode" placeholder="Security Code" required>
+        <div id="cardFields" class="card-info">
+            <div class="input_container">
+                <label class="Payment_input_label">Card Holder Name</label>
+                <input class="Payment_input" type="text" placeholder="Enter your full name" required>
+            </div>
+            <div class="input_container">
+                <label class="Payment_input_label">Card Number</label>
+                <input class="Payment_input" type="text" name="creditCardNumber" placeholder="Card Number" required>
+            </div>
+            <div class="input_container">
+                <label class="Payment_input_label">Expiry Date / CVV</label>
+                <div class="split">
+                    <input class="Payment_input" style="width: 250px;" type="text" name="creditCardExpiry" placeholder="Expiry Date (MM/YY)" required>
+                    <input class="Payment_input" style="width: 250px;" type="number" name="creditCardSecurityCode" placeholder="CVV" required>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Pay Now</button>

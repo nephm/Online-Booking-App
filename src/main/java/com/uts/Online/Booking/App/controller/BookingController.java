@@ -1,8 +1,6 @@
 package com.uts.Online.Booking.App.controller;
 
-import com.uts.Online.Booking.App.DAO.CourtDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
-import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +18,6 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private CourtDAO courtDAO;
 
     @Autowired
     private UserDAO userDAO;
@@ -43,8 +38,14 @@ public class BookingController {
         }
         
         try {
-            double totalAmount = 0.0;
+
+            Double totalAmount = bookingService.calculateTotalAmount(selectedSlots);
             Long bookingId = null;
+
+            if(getUser() == null){
+                return "redirect:/login?message=Please log in to make a booking";
+            }
+
             // Process each selected slot
             for (String slot : selectedSlots) {
                 System.out.println("Processing slot: " + slot);
@@ -62,11 +63,6 @@ public class BookingController {
                 LocalDate bookingDate = LocalDate.parse(parts[2]);
                 
                 System.out.println("Court: " + courtId + ", Timeslot: " + timeslotId + ", Date: " + bookingDate);
-                
-                Court court = courtDAO.findById(courtId).orElse(null);
-                if(court != null){
-                    totalAmount += court.getHourly_rate();
-                }
 
                 // Create the booking (assuming userId = 1 for now)
                 bookingId = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
