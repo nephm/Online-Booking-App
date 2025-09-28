@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 public class CourtController {
+
     @Autowired
     private CourtDAO courtDAO;
 

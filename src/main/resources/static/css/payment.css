@@ -1,0 +1,42 @@
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.card-info{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.input_container {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.Payment_input_label {
+  font-size: 12px;
+  color: #8B8E98;
+  font-weight: 600;
+}
+.Payment_input {
+  width: auto;
+  height: 40px;
+  padding: 0 0 0 16px;
+  border-radius: 9px;
+  outline: none;
+  background-color: #F2F2F2;
+  border: 1px solid #e5e5e500;
+  transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
+}
+
+.split input{
+    width: 100%;
+}
+
+

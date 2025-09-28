@@ -89,6 +89,11 @@ public class AuthController {
             return "register";
         }
 
+        if(phoneNumber.length() < 10 || phoneNumber.length() > 15 || phoneNumber.matches(".*[a-zA-Z]+.*")){
+            m.addAttribute("error", "Phone number is invalid");
+            return "register";
+        }
+
         User newUser = new User();
         newUser.setFirstName(fname);
         newUser.setLastName(lname);
@@ -104,9 +109,15 @@ public class AuthController {
         userDAO.save(newUser);
 
         //send notification
-        String activationLink = "http://localhost:8080/activate?token=" + token;
-        sendEmail(email, "Account Activation", "Click the link to activate your account: " + activationLink);
+        try {
+            String activationLink = "http://localhost:8080/activate?token=" + token;
+            sendEmail(email, "Account Activation", "Click the link to activate your account: " + activationLink);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            m.addAttribute("error", "failed to send activation email.");
+            return "register";
+        }
         return "redirect:/registration_email";
     }
 

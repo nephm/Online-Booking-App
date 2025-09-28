@@ -1,10 +1,13 @@
 package com.uts.Online.Booking.App.controller;
 
+import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -15,6 +18,14 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private UserDAO userDAO;
+
+    private User getUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userDAO.findByEmail(auth.getName()).orElse(null);
+    }
 
     @PostMapping("/book")
     public String bookSlots(@RequestParam("selectedSlots") List<String> selectedSlots,
@@ -27,6 +38,14 @@ public class BookingController {
         }
         
         try {
+
+            Double totalAmount = bookingService.calculateTotalAmount(selectedSlots);
+            Long bookingId = null;
+
+            if(getUser() == null){
+                return "redirect:/login?message=Please log in to make a booking";
+            }
+
             // Process each selected slot
             for (String slot : selectedSlots) {
                 System.out.println("Processing slot: " + slot);
@@ -44,17 +63,18 @@ public class BookingController {
                 LocalDate bookingDate = LocalDate.parse(parts[2]);
                 
                 System.out.println("Court: " + courtId + ", Timeslot: " + timeslotId + ", Date: " + bookingDate);
-                
+
                 // Create the booking (assuming userId = 1 for now)
-                bookingService.createBooking(courtId, timeslotId, bookingDate, 1);
+                bookingId = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
+               
             }
             
             // Success  add flash attributes and redirect to confirmation
             redirectAttributes.addFlashAttribute("success", "Your booking has been confirmed successfully!");
             redirectAttributes.addFlashAttribute("bookingCount", selectedSlots.size());
             
-            System.out.println("Booking successful. Redirecting to confirmation page.");
-            return "redirect:/booking-confirmation";
+            System.out.println("Booking successful. Redirecting to payment page.");
+            return "redirect:/payment?bookingId=" + bookingId + "&amount=" + totalAmount;
             
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format in slot data: " + e.getMessage());

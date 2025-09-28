@@ -11,7 +11,7 @@ public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="userID")
-    private int id;
+    private Long id;
 
     @Column(name="user_fname")
     private String firstName;
@@ -46,11 +46,11 @@ public class User implements Serializable{
     }
 
     // Getters and Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
