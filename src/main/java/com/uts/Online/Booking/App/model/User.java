@@ -1,83 +1,112 @@
-// package com.uts.Online.Booking.App.model;
+package com.uts.Online.Booking.App.model;
 
-// import jakarta.persistence.*;
+import jakarta.persistence.*;
+import java.io.Serializable;
 
-// @Entity
-// @Table(name ="users")
-// public class User {
+@Entity
+@Table(name ="users", schema ="dbo")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class User implements Serializable{
     
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="userID")
+    private Long id;
 
-//     private String firstName;
-//     private String lastName;
+    @Column(name="user_fname")
+    private String firstName;
 
-//     @Column(nullable = false, unique = true)
-//     private String email;
+     @Column(name="user_lname")
+    private String lastName;
 
-//     @Column(nullable = false)
-//     private String password;
-//     private int phoneNumber;
+    @Column(name="user_email", nullable = false, unique = true)
+    private String email;
 
-//     // Constructors
-//     public User() {}
+    @Column(name="password", nullable = false)
+    private String password;
 
-//     public User(Long id, String firstName, String lastName, String email, String password, int phoneNumber) {
-//         this.id = id;
-//         this.firstName = firstName;
-//         this.lastName = lastName;
-//         this.email = email;
-//         this.password = password;
-//         this.phoneNumber = phoneNumber;
-//     }
+    @Column(name="user_phone")
+    private String phoneNumber;
 
-//     // Getters and Setters
-//     public Long getId() {
-//         return id;
-//     }
+    @Column(name="is_active")
+    private boolean isActive = false;
 
-//     public void setId(Long id) {
-//         this.id = id;
-//     }
+    @Column(name="activation_token")
+    private String activationToken;
 
-//     public String getFirstName() {
-//         return firstName;
-//     }
+    // Constructors
+    public User() {}
 
-//     public void setFirstName(String firstName) {
-//         this.firstName = firstName;
-//     }
+    public User(String firstName, String lastName, String email, String password, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
 
-//     public String getlastName() {
-//         return lastName;
-//     }
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-//     public void setlastName(String lastName) {
-//         this.lastName = lastName;
-//     }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-//     public String getEmail() {
-//         return email;
-//     }
+    public String getFirstName() {
+        return firstName;
+    }
 
-//     public void setEmail(String email) {
-//         this.email = email;
-//     }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-//     public String getPassword() {
-//         return password;
-//     }
+    public String getLastName() {
+        return lastName;
+    }
 
-//     public void setPassword(String password) {
-//         this.password = password;
-//     }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-//     public int getPhoneNumber() {
-//         return phoneNumber;
-//     }
+    public String getEmail() {
+        return email;
+    }
 
-//     public void setPhoneNumber(int phoneNumber) {
-//         this.phoneNumber = phoneNumber;
-//     }
-// }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public String getActivationToken() {
+        return activationToken;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public void setActivationToken(String verificationToken) {
+        this.activationToken = verificationToken;
+    }
+}

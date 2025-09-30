@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Payment</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/payment.css}" rel="stylesheet">
+    <script th:src="@{/js/script.js}" defer></script>
+</head>
+<body>
+    <form th:action="@{/process}" method="post" class="payment-form">
+        <h2>Payment Details</h2>
+        <input type="hidden" name="bookingId" th:value="${bookingId}">
+        <input type="hidden" name="amount" th:value="${amount}">
+
+        <p>Total amount: $<span th:text="${amount}"></span></p>
+
+        <select id="paymentType" name="type" required onchange="toggleFields()">
+            <option value="CREDIT_CARD">Credit Card</option>
+            <option value="CREDIT_BALANCE" th:if="${creditBalance != null}">Credit Balance ($<span th:text="${creditBalance}"></span>)</option>
+        </select>
+
+        <div id="cardFields" class="card-info">
+            <div class="input_container">
+                <label class="Payment_input_label">Card Holder Name</label>
+                <input class="Payment_input" type="text" placeholder="Enter your full name" required>
+            </div>
+            <div class="input_container">
+                <label class="Payment_input_label">Card Number</label>
+                <input class="Payment_input" type="text" name="creditCardNumber" placeholder="Card Number" required>
+            </div>
+            <div class="input_container">
+                <label class="Payment_input_label">Expiry Date / CVV</label>
+                <div class="split">
+                    <input class="Payment_input" style="width: 250px;" type="text" name="creditCardExpiry" placeholder="Expiry Date (MM/YY)" required>
+                    <input class="Payment_input" style="width: 250px;" type="number" name="creditCardSecurityCode" placeholder="CVV" required>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Pay Now</button>
+    </form>
+</body>

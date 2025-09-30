@@ -5,7 +5,7 @@
     <title>Badminton Court Booking</title>
     <link th:href="@{/css/styles.css}" rel="stylesheet">
     <link th:href="@{/css/court.css}" rel="stylesheet">
-    <script th:src="@{/script.js}" defer></script>
+    <script th:src="@{/js/script.js}" defer></script>
 </head>
 <body>
 <div class="dashboard-container">
@@ -22,9 +22,8 @@
                     <a th:href="@{/login}" class="auth-btn login-btn">Login</a>
                     <a th:href="@{/register}" class="auth-btn register-btn">Register</a>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
 
     <h1 class="venues-title" th:text="${pageTitle ?: 'Elite Badminton Center'}">Elite Badminton Center</h1>
 

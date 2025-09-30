@@ -9,8 +9,37 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+
 steps:
+
+# set up maven cache folder
+
+
+# cache maven packages
+- task: Cache@2
+  inputs:
+    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    restoreKeys: |
+      maven | "$(Agent.OS)"
+      maven
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven packages
+
+#clean and compile
 - task: Maven@3
+  displayName: 'Maven clean and compile'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.21'
+    jdkArchitectureOption: 'x64'
+    goals: 'clean compile'
+    options: '-e '
+
+#run tests
+- task: Maven@3
+  displayName: 'tests'
   inputs:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
@@ -19,5 +48,33 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'test'
+    options: '-e'
+
+# package the application without running tests
+- task: Maven@3
+  displayName: 'Maven clean and compile'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.21'
+    jdkArchitectureOption: 'x64'
     goals: 'package'
-    options: '-e -X'
+    options: '-e -DskipTests' 
+
+# publish the jar file
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish JAR'
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/target/Online-Booking-App-0.0.1-SNAPSHOT.jar'
+    ArtifactName: 'badminton-booking-app'
+  condition: succeeded()
+
+# publish test results even if fail
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    testRunTitle: 'Publish Test Results'
+  condition: always()

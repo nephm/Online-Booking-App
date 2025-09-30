@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badminton Court Booking</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <script src="script.js" defer></script>
-</head>
+    <title>Landing Page</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script src="/js/script.js" defer></script>
+</head> 
 
 <body>
     <div class="dashboard-container">
@@ -40,33 +40,30 @@
                 </div>
             </div>
 
-            <div class="venue-section" id="venues">
                 <h2 class="venue-title">Popular Venues</h2>
-                <div class="venue-grid">
-                    <div class="venue-card" onclick="selectVenue('elite')">
-                        <div class="venue-name">Elite Badminton Center</div>
-                        <div class="venue-info">📍 Downtown • Premium facilities</div>
-                        <div class="venue-courts">8 Courts Available</div>
-                    </div>
+                <div class="container-venues">
 
-                    <div class="venue-card" onclick="selectVenue('sports')">
-                        <div class="venue-name">SportsPlex Arena</div>
-                        <div class="venue-info">📍 North District • Family friendly</div>
-                        <div class="venue-courts">12 Courts Available</div>
-                    </div>
-
-                    <div class="venue-card" onclick="selectVenue('champion')">
-                        <div class="venue-name">Champion Courts</div>
-                        <div class="venue-info">📍 East Side • Tournament grade</div>
-                        <div class="venue-courts">6 Courts Available</div>
-                    </div>
-
-                    <div class="venue-card" onclick="selectVenue('city')">
-                        <div class="venue-name">City Badminton Hub</div>
-                        <div class="venue-info">📍 Central • 24/7 Access</div>
-                        <div class="venue-courts">10 Courts Available</div>
-                    </div>
+                <div class="venue-card">
+                    <h2>Elite Badminton Center</h2>
+                    <p>Address: 📍 Downtown • 12 Shuttle Ave, Downtown NSW 2000</p>
+                    <p>Phone: (02) 1234 5678</p>
+                    <a href="/venue/1/courts" class="_blank">View Court</a>
                 </div>
+    
+                <div class="venue-card">
+                    <h2>SportsPlex Arena</h2>
+                    <p>Address: 📍 North District • 88 Smash Rd, North District NSW 2060</p>
+                    <p>Phone: (02) 2345 6789</p>
+                    <a href="/venue/2/courts" class="_blank">View Court</a>
+                </div>
+    
+                <div class="venue-card">
+                    <h2>Champion Courts</h2>
+                    <p>Address: 📍 East Side • 45 Netplay St, East Side NSW 2034</p>
+                    <p>Phone: (02) 3456 7890</p>
+                    <a href="/venue/3/courts" class="_blank">View Court</a>
+                </div>
+    
             </div>
     </div>
 </body>
