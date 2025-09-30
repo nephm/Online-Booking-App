@@ -8,39 +8,74 @@ public class Court {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long courtId;
-    private String courtName;
-    private String courtType;
+    private Long court_id;
+
+    private String court_name;
+    private String court_type;
     private String location;
-    private double hourlyRate;
+    private double hourly_rate;
 
     @Transient
     private boolean available = true;
 
     @ManyToOne
-    @JoinColumn(name = "venueId")
+    @JoinColumn(name = "venue_id", nullable = false) // foreign key
     private Venue venue;
 
     public Court() {}
 
-    public Long getCourtId() { return courtId; }
-    public void setCourtId(Long courtId) { this.courtId = courtId; }
-    
-    public String getCourtName() { return courtName; }
-    public void setCourtName(String courtName) { this.courtName = courtName; }
-    
-    public String getCourtType() { return courtType; }
-    public void setCourtType(String courtType) { this.courtType = courtType; }
-    
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    
-    public double getHourlyRate() { return hourlyRate; }
-    public void setHourlyRate(double hourlyRate) { this.hourlyRate = hourlyRate; }
-    
-    public boolean isAvailable() { return available; }
-    public void setAvailable(boolean available) { this.available = available; }
-    
-    public Venue getVenue() { return venue; }
-    public void setVenue(Venue venue) { this.venue = venue; }
+    public Court(Long id, String name, boolean available) {
+        this.court_id = id;
+        this.court_name = name;
+        this.available = available;
+    }
+
+    // Getters and setters
+    public Long getCourt_id() {
+        return court_id;
+    }
+
+    public void setCourt_id(Long court_id) {
+        this.court_id = court_id;
+    }
+
+    public String getCourt_name() {
+        return court_name;
+    }
+
+    public void setCourt_name(String court_name) {
+        this.court_name = court_name;
+    }
+
+    public String getCourt_type() {
+        return court_type;
+    }
+
+    public void setCourt_type(String court_type) {
+        this.court_type = court_type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public double getHourly_rate() {
+        return hourly_rate;
+    }
+
+    public void setHourly_rate(double hourly_rate) {
+        this.hourly_rate = hourly_rate;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
 }
