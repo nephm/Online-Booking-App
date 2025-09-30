@@ -31,31 +31,20 @@ public class BookingController {
     public String bookSlots(@RequestParam("selectedSlots") List<String> selectedSlots,
                            RedirectAttributes redirectAttributes) {
         
-        // Check if no slots selected
-        if(selectedSlots == null || selectedSlots.isEmpty()) {
+        if (selectedSlots == null || selectedSlots.isEmpty()) {
             System.out.println("No slots selected");
             return "redirect:/error?message=Please select at least one time slot";
         }
         
         try {
-
-            Double totalAmount = bookingService.calculateTotalAmount(selectedSlots);
-            Long bookingId = null;
-
-            if(getUser() == null){
-                return "redirect:/login?message=Please log in to make a booking";
-            }
-
-            // Process each selected slot
             for (String slot : selectedSlots) {
                 System.out.println("Processing slot: " + slot);
                 
-                // Split slot format: "courtId-timeslotId-date"
                 String[] parts = slot.split("-", 3);
                 
                 if (parts.length != 3) {
                     System.err.println("Invalid slot format: " + slot);
-                    continue; // Skip invalid slots but continue processing others
+                    continue;
                 }
                 
                 Long courtId = Long.parseLong(parts[0]);
@@ -63,13 +52,10 @@ public class BookingController {
                 LocalDate bookingDate = LocalDate.parse(parts[2]);
                 
                 System.out.println("Court: " + courtId + ", Timeslot: " + timeslotId + ", Date: " + bookingDate);
-
-                // Create the booking (assuming userId = 1 for now)
-                bookingId = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
-               
+                
+                bookingService.createBooking(courtId, timeslotId, bookingDate, 1L);
             }
             
-            // Success  add flash attributes and redirect to confirmation
             redirectAttributes.addFlashAttribute("success", "Your booking has been confirmed successfully!");
             redirectAttributes.addFlashAttribute("bookingCount", selectedSlots.size());
             
@@ -78,12 +64,12 @@ public class BookingController {
             
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format in slot data: " + e.getMessage());
-            return "redirect:/error?message=Invalid booking data format. Please try again";
+            return "redirect:/error?message=Invalid booking data format";
             
         } catch (Exception e) {
             System.err.println("Error processing booking: " + e.getMessage());
-            e.printStackTrace(); // For debugging
-            return "redirect:/error?message=Technical error occurred. Please try again or contact support";
+            e.printStackTrace();
+            return "redirect:/error?message=Technical error occurred";
         }
     }
 
@@ -91,12 +77,4 @@ public class BookingController {
     public String showBookingConfirmation() {
         return "booking-confirmation";
     }
-    
-    //error page for later
-    // @GetMapping("/error")
-    // public String showErrorPage(@RequestParam(value = "message", required = false) String message, 
-    //                            Model model) {
-    //     model.addAttribute("errorMessage", message != null ? message : "An unexpected error occurred");
-    //     return "error"; // You'll need to create an error.html template
-    // }
 }
