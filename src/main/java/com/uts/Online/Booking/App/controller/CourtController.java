@@ -65,8 +65,10 @@ public class CourtController {
 
         // Format header slots
         List<String> headerSlots = timeslots.stream()
-            .map(slot -> slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")))
-
+            .map(slot -> {
+                LocalTime time = LocalTime.parse(slot.getStart_time());
+                return DateTimeFormatter.ofPattern("HH:mm").format(time);
+            })
             .collect(Collectors.toList());
 
         // Create availability map
@@ -75,14 +77,14 @@ public class CourtController {
         // Initialize all slots as available
         courts.forEach(court -> {
             timeslots.forEach(slot -> {
-                String key = court.getCourtId() + "-" + slot.getTimeslotId();
+                String key = court.getCourt_id() + "-" + slot.getTimeslot_id();
                 availability.put(key, true);
             });
         });
 
         // Mark booked slots
         bookings.forEach(booking -> {
-            String key = booking.getCourt().getCourtId() + "-" + booking.getTimeslot().getTimeslotId();
+            String key = booking.getCourt().getCourt_id() + "-" + booking.getTimeslot().getTimeslot_id();
             availability.put(key, false);
         });
 
@@ -93,26 +95,6 @@ public class CourtController {
         model.addAttribute("headerSlots", headerSlots);
         model.addAttribute("availability", availability);
         model.addAttribute("selectedDate", selectedDate);
-
-        // NEW: Check if we're in edit mode (from admin redirect)
-        if (model.containsAttribute("editMode")) {
-            model.addAttribute("pageTitle", "Edit Booking - " + venue.getVenueName());
-            model.addAttribute("submitButtonText", "Update Booking");
-            model.addAttribute("submitAction", "/admin/update-booking");
-            
-            // Pre-select the original slot
-            Long originalCourtId = (Long) model.asMap().get("originalCourtId");
-            Long originalTimeslotId = (Long) model.asMap().get("originalTimeslotId");
-            if (originalCourtId != null && originalTimeslotId != null) {
-                String originalSlotKey = originalCourtId + "-" + originalTimeslotId;
-                model.addAttribute("preSelectedSlot", originalSlotKey);
-            }
-        } else {
-            // Normal booking mode
-            model.addAttribute("pageTitle", venue.getVenueName());
-            model.addAttribute("submitButtonText", "Proceed to Book");
-            model.addAttribute("submitAction", "/book");
-        }
 
         return "court";
     }

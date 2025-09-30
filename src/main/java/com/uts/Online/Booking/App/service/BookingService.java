@@ -6,93 +6,61 @@ import com.uts.Online.Booking.App.DAO.TimeslotDAO;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class BookingService {
 
     @Autowired
     private BookingDAO bookingDAO;
-
     @Autowired
     private CourtDAO courtDAO;
-
     @Autowired
     private TimeslotDAO timeslotDAO;
     
 
-    public Booking createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
-        Court court = courtDAO.findById(courtId).orElseThrow(() -> new RuntimeException("Court not found"));
-        Timeslot timeslot = timeslotDAO.findById(timeslotId).orElseThrow(() -> new RuntimeException("Timeslot not found"));
-
-        if (isSlotBooked(courtId, timeslotId, bookingDate)) {
-            throw new RuntimeException("This time slot is already booked");
-        }
-
+    public Long createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
+        Court court = courtDAO.findById(courtId).orElseThrow();
+        Timeslot timeslot = timeslotDAO.findById(timeslotId).orElseThrow();
         Booking booking = new Booking();
         booking.setCourt(court);
         booking.setTimeslot(timeslot);
-        booking.setBookingDate(bookingDate);
-        booking.setUserId(userId);
-        booking.setStatus("CONFIRMED");
+        booking.setBooking_date(bookingDate);
+        booking.setStatus("BOOKED");
+        booking.setUserid(userId);
+        Booking savedBooking = bookingDAO.save(booking);
 
-        return bookingDAO.save(booking);
+        return savedBooking.getBooking_id();
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingDAO.findAll();
+    // update booking after payment
+    public void updateBookingStatus(Long bookingId, String status){
+        Booking booking = bookingDAO.findById(bookingId).orElseThrow();
+        booking.setStatus(status);
+        bookingDAO.save(booking);
     }
 
-    public Booking getBookingById(Long bookingId) {
-        return bookingDAO.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking not found"));
+    //calculate total amount for multiple slots
+    public Double calculateTotalAmount(List<String> selectedSlots){
+        return selectedSlots.stream()
+            .mapToDouble(slot ->{
+                String[] parts = slot.split("-", 3);
+                
+                if (parts.length != 3) {
+                    return 0.0;
+                }
+                
+                Long courtId = Long.parseLong(parts[0]);
+                Court court = courtDAO.findById(courtId).orElse(null);
+                return court != null ? court.getHourly_rate() : 0.0;
+            })
+            .sum();
     }
 
-    public Booking updateBooking(Long bookingId, Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
-        Booking existingBooking = getBookingById(bookingId);
-        Court court = courtDAO.findById(courtId).orElseThrow(() -> new RuntimeException("Court not found"));
-        Timeslot timeslot = timeslotDAO.findById(timeslotId).orElseThrow(() -> new RuntimeException("Timeslot not found"));
-
-        if (isSlotBookedExcluding(courtId, timeslotId, bookingDate, bookingId)) {
-            throw new RuntimeException("The new time slot is already booked");
-        }
-
-        existingBooking.setCourt(court);
-        existingBooking.setTimeslot(timeslot);
-        existingBooking.setBookingDate(bookingDate);
-        existingBooking.setUserId(userId);
-
-        return bookingDAO.save(existingBooking);
-    }
-
-    public void deleteBooking(Long bookingId) {
-        bookingDAO.deleteById(bookingId);
-    }
-
-    public boolean isSlotBooked(Long courtId, Long timeslotId, LocalDate date) {
-        return bookingDAO.existsByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(courtId, timeslotId, date);
-    }
-
-    private boolean isSlotBookedExcluding(Long courtId, Long timeslotId, LocalDate date, Long excludeBookingId) {
-        List<Booking> existingBookings = bookingDAO.findByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(courtId, timeslotId, date);
-        return existingBookings.stream().anyMatch(booking -> !booking.getBookingId().equals(excludeBookingId));
-    }
-
-    public Map<String, Boolean> getAvailabilityMap(Long venueId, LocalDate date, List<Court> courts, List<Timeslot> timeslots) {
-        Map<String, Boolean> availability = new HashMap<>();
-        for (Court court : courts) {
-            for (Timeslot timeslot : timeslots) {
-                String key = court.getCourtId() + "-" + timeslot.getTimeslotId();
-                availability.put(key, !isSlotBooked(court.getCourtId(), timeslot.getTimeslotId(), date));
-            }
-        }
-        return availability;
-    }
+    
 }
