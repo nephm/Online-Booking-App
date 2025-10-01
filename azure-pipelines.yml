@@ -12,11 +12,6 @@ pool:
 
 steps:
 
-# set up maven cache folder
-
-
-
-
 #clean and compile
 - task: Maven@3
   displayName: 'Maven clean and compile'
