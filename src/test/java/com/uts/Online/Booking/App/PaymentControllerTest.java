@@ -4,9 +4,9 @@ import com.uts.Online.Booking.App.DAO.PaymentDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.controller.PaymentController;
 import com.uts.Online.Booking.App.model.Payment;
-import com.uts.Online.Booking.App.model.PaymentType;
 import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.service.BookingService;
+import com.uts.Online.Booking.App.service.CustomerDetailsService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 
 import java.util.Optional;
@@ -38,6 +39,9 @@ public class PaymentControllerTest{
     @MockBean
     private BookingService bookingService;
 
+    @MockBean
+    private CustomerDetailsService uService;
+
     @Test
     @WithMockUser(username = "player@example.com")
     public void testCreditCardPayment_Success() throws Exception{
@@ -54,15 +58,16 @@ public class PaymentControllerTest{
         when(paymentDAO.save(any(Payment.class))).thenReturn(mockPayment);
 
         // test
-        mockMvc.perform(post("/payment/process")
+        mockMvc.perform(post("/process")
+                .with(csrf())
                 .param("bookingId", "1")
                 .param("amount", "35.0")
                 .param("type", "CREDIT_CARD")
                 .param("creditCardNumber", "1234567890123456")
                 .param("creditCardExpiry", "12/25")
-                .param("creditCardSecuirtyCode", "123"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("booking-confirmation"));
+                .param("creditCardSecurityCode", "123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/booking-confirmation"));
     }
 
     @Test //test payment with credit when insufficient funds/fails
@@ -82,7 +87,8 @@ public class PaymentControllerTest{
         when(paymentDAO.save(any(Payment.class))).thenReturn(mockPayment);
 
         // test
-        mockMvc.perform(post("/payment/process")
+        mockMvc.perform(post("/process")
+                .with(csrf())
                 .param("bookingId", "1")
                 .param("amount", "35.0")
                 .param("type", "CREDIT_BALANCE"))
