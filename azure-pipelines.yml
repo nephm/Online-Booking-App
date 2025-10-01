@@ -15,15 +15,7 @@ steps:
 # set up maven cache folder
 
 
-# cache maven packages
-- task: Cache@2
-  inputs:
-    key: 'maven | "$(Agent.OS)" | **/pom.xml'
-    restoreKeys: |
-      maven | "$(Agent.OS)"
-      maven
-    path: $(MAVEN_CACHE_FOLDER)
-  displayName: Cache Maven packages
+
 
 #clean and compile
 - task: Maven@3
