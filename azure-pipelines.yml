@@ -24,7 +24,7 @@ steps:
     path: $(MAVEN_CACHE_FOLDER)
 
 # Clean and compile
-- task: Maven@3
+- task: Maven@4
   displayName: 'Maven clean and compile'
   inputs:
     mavenPomFile: 'pom.xml'
@@ -36,7 +36,7 @@ steps:
     options: '-e'
 
 # Run integration tests
-- task: Maven@3
+- task: Maven@4
   displayName: 'Run Integration Tests'
   inputs:
     mavenPomFile: 'pom.xml'
@@ -51,7 +51,7 @@ steps:
   continueOnError: true
 
 # Package the application without running tests (already ran above)
-- task: Maven@3
+- task: Maven@4
   displayName: 'Maven package'
   inputs:
     mavenPomFile: 'pom.xml'
