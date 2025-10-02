@@ -21,10 +21,12 @@
         </header>
 
         <div class="container">
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}" 
+                 style="margin: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; color: #155724;"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}" 
+                 style="margin: 20px; padding: 15px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24;"></div>
 
-            <h2 class="table-title">ADMIN - Court Bookings</h2>
+            <h2 class="table-title">Admin - Court Bookings</h2>
             
             <table class="booking-table">
                 <thead>
@@ -44,17 +46,17 @@
                         <td th:text="${booking.bookingId}">1</td>
                         <td th:text="${booking.userId}">1</td>
                         <td th:text="${booking.court != null ? booking.court.courtName : 'N/A'}">Court 1</td>
-                        <td th:text="${#temporals.format(booking.bookingDate, 'MMM dd, yyyy')}">Sep 27, 2025</td>
+                        <td th:text="${booking.bookingDate != null ? #temporals.format(booking.bookingDate, 'MMM dd, yyyy') : 'N/A'}">Sep 27, 2025</td>
                         <td th:text="${booking.timeslot != null ? booking.timeslot.startTime + ' - ' + booking.timeslot.endTime : 'N/A'}">10:00 - 11:00</td>
                         <td>
-                            <span class="status-badge status-confirmed">CONFIRMED</span>
+                            <span class="status-badge status-confirmed" th:text="${booking.status ?: 'CONFIRMED'}">CONFIRMED</span>
                         </td>
                         <td>
                             <div class="action-buttons">
                                 <a th:href="@{/admin/edit/{id}(id=${booking.bookingId})}" 
                                    class="action-btn edit-btn">Edit</a>
                                 <button class="action-btn delete-btn" 
-                                        th:onclick="'deleteBooking(' + ${booking.bookingId} + ')'">Delete</button>
+                                        th:onclick="'showDeleteModal(' + ${booking.bookingId} + ')'">Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -69,6 +71,7 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>Confirm Delete</h3>
@@ -79,5 +82,37 @@
             </div>
         </div>
     </div>
+
+    <script>
+        let bookingIdToDelete = null;
+
+        function showDeleteModal(bookingId) {
+            bookingIdToDelete = bookingId;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (bookingIdToDelete) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/delete/' + bookingIdToDelete;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            document.getElementById('deleteModal').style.display = 'none';
+            bookingIdToDelete = null;
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                bookingIdToDelete = null;
+            }
+        });
+    </script>
 </body>
 </html>

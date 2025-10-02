@@ -1,7 +1,5 @@
 # Maven
 # Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
 - main
@@ -9,8 +7,37 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
 steps:
+
+# Cache Maven dependencies for faster builds
+- task: Cache@2
+  displayName: 'Cache Maven dependencies'
+  inputs:
+    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    restoreKeys: |
+      maven | "$(Agent.OS)"
+      maven
+    path: $(MAVEN_CACHE_FOLDER)
+
+# Clean and compile
 - task: Maven@3
+  displayName: 'Maven clean and compile'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.21'
+    jdkArchitectureOption: 'x64'
+    goals: 'clean compile'
+    options: '-e'
+
+# Run integration tests
+- task: Maven@3
+  displayName: 'Run Integration Tests'
   inputs:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
@@ -19,5 +46,38 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'test'
+    options: '-e -Dspring.profiles.active=test'
+  continueOnError: true
+
+# Package the application without running tests (already ran above)
+- task: Maven@3
+  displayName: 'Maven package'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.21'
+    jdkArchitectureOption: 'x64'
     goals: 'package'
-    options: '-e -X'
+    options: '-e -DskipTests'
+
+# Publish test results (always runs even if tests fail)
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    testRunTitle: 'Integration Tests'
+    failTaskOnFailedTests: true
+    mergeTestResults: true
+  condition: always()
+
+# Publish the JAR file (only if tests pass)
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish JAR'
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/target/Online-Booking-App-0.0.1-SNAPSHOT.jar'
+    ArtifactName: 'badminton-booking-app'
+    publishLocation: 'Container'
+  condition: succeeded()
