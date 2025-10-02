@@ -8,18 +8,22 @@ public class Court {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="courtId")
     private Long court_id;
-
+    @Column(name="courtName")
     private String court_name;
+    @Column(name="courtType")
     private String court_type;
+    
     private String location;
+    @Column(name="hourlyRate")
     private double hourly_rate;
 
     @Transient
     private boolean available = true;
 
     @ManyToOne
-    @JoinColumn(name = "venue_id", nullable = false) // foreign key
+    @JoinColumn(name = "venueId", nullable = false) // foreign key
     private Venue venue;
 
     public Court() {}

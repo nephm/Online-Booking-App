@@ -65,11 +65,19 @@ public class CourtController {
 
         // Format header slots
         List<String> headerSlots = timeslots.stream()
-            .map(slot -> {
-                LocalTime time = LocalTime.parse(slot.getStart_time());
-                return DateTimeFormatter.ofPattern("HH:mm").format(time);
-            })
-            .collect(Collectors.toList());
+    .map(slot -> {
+        String start = slot.getStart_time();
+        if (start == null || start.isBlank()) {
+            return "N/A"; // or skip this slot
+        }
+        try {
+            LocalTime time = LocalTime.parse(start);
+            return DateTimeFormatter.ofPattern("HH:mm").format(time);
+        } catch (Exception e) {
+            return "Invalid"; // fallback if parsing fails
+        }
+    })
+    .collect(Collectors.toList());
 
         // Create availability map
         Map<String, Boolean> availability = new HashMap<>();

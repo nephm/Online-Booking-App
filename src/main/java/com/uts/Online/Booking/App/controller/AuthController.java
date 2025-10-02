@@ -84,7 +84,7 @@ public class AuthController {
             return "register";
         } 
 
-        if(password.length() < 6){
+        if(password.length() < 8){
             m.addAttribute("error", "Password must be at least 8 characters long");
             return "register";
         }

@@ -4,15 +4,16 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Venues", schema ="dbo")
+@Table(name = "venues", schema ="dbo")
 public class Venue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="venueId")
     private Long venueId;
 
-    @Column(nullable = false, length = 100)
-    private String venue_name;
+    @Column(nullable = false, length = 100, name="venueName")
+    private String venueName;
 
     @Column(length = 255)
     private String address;
@@ -34,12 +35,12 @@ public class Venue {
         this.venueId = venueId;
     }
 
-    public String getVenue_name() {
-        return venue_name;
+    public String getVenueName() {
+        return venueName;
     }
 
-    public void setVenue_name(String venue_name) {
-        this.venue_name = venue_name;
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
     }
 
     public String getAddress() {

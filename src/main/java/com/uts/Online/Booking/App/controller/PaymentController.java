@@ -135,7 +135,7 @@ public class PaymentController {
             return "redirect:/booking-confirmation";
         } else{
             bookingService.updateBookingStatus(bookingId, "FAILED");
-            return "payment/failed";
+            return "payment_failed";
         }
     }
 
