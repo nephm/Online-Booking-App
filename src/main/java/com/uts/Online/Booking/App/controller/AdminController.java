@@ -2,10 +2,6 @@ package com.uts.Online.Booking.App.controller;
 
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.service.BookingService;
-
-import java.time.LocalDate;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +10,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.util.List;
+
+@Controller
+@RequestMapping("/admin")
 public class AdminController {
-  
+
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
@@ -49,6 +50,12 @@ public class AdminController {
             if (booking.getCourt() == null) {
                 logger.error("Booking {} has no court assigned", bookingId);
                 redirectAttributes.addFlashAttribute("error", "Invalid booking data: No court assigned");
+                return "redirect:/admin";
+            }
+            
+            if (booking.getCourt().getVenue() == null) {
+                logger.error("Booking {} has court with no venue assigned", bookingId);
+                redirectAttributes.addFlashAttribute("error", "Invalid booking data: No venue assigned");
                 return "redirect:/admin";
             }
             
@@ -173,9 +180,8 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/deleteBooking")
+    @DeleteMapping("/api/booking/{bookingId}")
     @ResponseBody
-
     public String deleteBookingAjax(@PathVariable Long bookingId) {
         if (bookingId == null) {
             logger.error("AJAX delete called without bookingId");
