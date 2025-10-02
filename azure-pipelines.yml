@@ -2,6 +2,7 @@
 # Build your Java project and run tests with Apache Maven.
 
 trigger:
+- main
 - plswork
 
 pool:
