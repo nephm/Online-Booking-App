@@ -6,9 +6,6 @@ import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.config.SecurityConfig;
 import com.uts.Online.Booking.App.controller.AuthController;
 import com.uts.Online.Booking.App.model.User;
-import com.uts.Online.Booking.App.model.Admin;
-import com.uts.Online.Booking.App.model.Payment;
-import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
 
 import org.junit.jupiter.api.Test;
@@ -26,8 +23,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

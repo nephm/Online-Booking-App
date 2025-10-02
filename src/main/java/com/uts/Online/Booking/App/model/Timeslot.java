@@ -8,9 +8,11 @@ public class Timeslot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="timeslotId")
     private Long timeslot_id;
-
+    @Column(name="startTime")
     private String start_time;
+    @Column(name="endTime")
     private String end_time;
 
     public Timeslot() {}

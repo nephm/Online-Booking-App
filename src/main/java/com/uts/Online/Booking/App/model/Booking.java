@@ -9,17 +9,18 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="bookingId")
     private Long booking_id;
 
     @ManyToOne
-    @JoinColumn(name = "court_id")
+    @JoinColumn(name = "courtId")
     private Court court;
 
     @ManyToOne
-    @JoinColumn(name = "timeslot_id")
+    @JoinColumn(name = "timeslotId")
     private Timeslot timeslot;
 
-    @Column(name = "booking_date")
+    @Column(name = "bookingDate")
     private LocalDate bookingDate;
     private String status;
 
