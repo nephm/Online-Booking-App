@@ -42,7 +42,7 @@ public class PaymentControllerTest{
     @MockBean
     private CustomerDetailsService uService;
 
-    @Test
+    @Test //test credit card payment
     @WithMockUser(username = "player@example.com")
     public void testCreditCardPayment_Success() throws Exception{
 
