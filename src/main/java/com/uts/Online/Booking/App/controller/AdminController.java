@@ -10,13 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.util.List;
-
-@Controller
-@RequestMapping("/admin")
 public class AdminController {
-
+  
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
@@ -180,8 +175,9 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/api/booking/{bookingId}")
+    @GetMapping("/deleteBooking")
     @ResponseBody
+
     public String deleteBookingAjax(@PathVariable Long bookingId) {
         if (bookingId == null) {
             logger.error("AJAX delete called without bookingId");

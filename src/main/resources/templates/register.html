@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badminton Court Booking</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
-</head>
+    <title>Registration</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script src="/js/script.js" defer></script>
+</head>     
 
 <body>
     <div class="dashboard-container">    
@@ -18,6 +19,15 @@
         </header>
         <div class="container">
             <h2>Register Your Account</h2>
+
+            <div th:if="${error}" class="alert-error" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div th:if="${message}" class="alert-error" role="alert">
+                <p th:text="${message}"></p>
+            </div>
+
             <div class ="form-wrapper">
                 <form action="/register" method="post">
                     <label for="firstName">First Name:</label>
@@ -35,7 +45,7 @@
                     <label for="phoneNumber">Phone Number:</label>
                     <input type="text" id="phoneNumber" name="phoneNumber" required>
                     
-                    <input type="submit" value="Sign Up" >
+                    <button type="submit">Register</button>
 
                     <h3>Already have an account? <a href="/login">Login</a></h3>
                 </form>

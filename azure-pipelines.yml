@@ -29,6 +29,7 @@ steps:
 # Run integration tests
 - task: Maven@4
   displayName: 'Run Integration Tests'
+
   inputs:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'

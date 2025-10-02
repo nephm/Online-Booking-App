@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badminton Court Booking</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script src="/js/script.js" defer></script>
 </head>
 
 <body>
@@ -15,22 +15,15 @@
             <nav class="nav">
                 <div class="logo">CourtBooker</div>
                 <div class="nav-links">
-                    <a href="venues.html" class="nav-link">Venues</a>
+                    <a href="/venues" class="nav-link">Venues</a>
                     <a href="about.html" class="nav-link">About</a>
                     <a href="contacts.html" class="nav-link">Contacts</a>
 
                     <div class="profile">
-                        <button class="profile-btn">
+                        <button class="profile-btn" onclick="window.location.href='/profile'">
                             <img src="images/userProfile_logo.jpg" alt="User icon" class="icon">
-                            <span class="username">Hi, </span>
                         </button>
-                        <div class="dropdown">
-                            <a href="profile.html">My Profile</a>
-                            <a href="bookings.html">My Bookings</a>
-                            <a href="settings.html">Settings</a>
-                            <a href="logout.html">Logout</a>
                     </div>
-                </div>
                 </div>
             </nav>
         </header>
@@ -43,8 +36,8 @@
                 
 
                 <div class="action-buttons">
-                    <a href="booking.html" class="btn btn-primary pulse">Book Now</a>
-                    <a href="venues.html" class="btn btn-secondary">Explore Venues</a>
+                    <a href="/venues" class="btn btn-primary pulse">Book Now</a>
+                    <a href="/venues" class="btn btn-secondary">Explore Venues</a>
                 </div>
             </div>
 

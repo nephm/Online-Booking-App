@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - CourtBooker</title>
-    <link th:href="@{/admin.css}" rel="stylesheet">
-    <script th:src="@{/js/admin.js}" defer></script>
+    <title>Badminton Court Booking - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <script src="/js/script.js" defer></script>
 </head>
+
 <body>
     <div class="dashboard-container">    
         <header class="header">
             <nav class="nav">
                 <div class="logo">CourtBooker</div>
-                <div class="nav-links">
-                    <a th:href="@{/venues}" class="nav-link">Venues</a>
-                    <a th:href="@{/admin}" class="nav-link">Admin</a>
-                    <a th:href="@{/}" class="nav-link">Home</a>
-                </div>
             </nav>
         </header>
 
@@ -32,12 +29,11 @@
                 <thead>
                     <tr>
                         <th>Booking ID</th>
-                        <th>User ID</th>
-                        <th>Court</th>
-                        <th>Date</th>
-                        <th>Time Slot</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>Location</th>
+                        <th>Court Number</th>
+                        <th>Date & Time</th>
+                        <th>Duration</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 
@@ -51,7 +47,15 @@
                         <td>
                             <span class="status-badge status-confirmed" th:text="${booking.status ?: 'CONFIRMED'}">CONFIRMED</span>
                         </td>
+                    </tr>
+                    <tr>
+                        <td>BK004</td>
+                        <td>Sports Plex</td>
+                        <td>4</td>
+                        <td>Sept 6, 2025 - 4:00 PM</td>
+                        <td>2 hours</td>
                         <td>
+
                             <div class="action-buttons">
                                 <a th:href="@{/admin/edit/{id}(id=${booking.bookingId})}" 
                                    class="action-btn edit-btn">Edit</a>
@@ -60,10 +64,15 @@
                             </div>
                         </td>
                     </tr>
-                    
-                    <tr th:if="${bookings == null or bookings.isEmpty()}">
-                        <td colspan="7" style="text-align: center; padding: 2rem; color: #94a3b8;">
-                            No bookings found
+                    <tr>
+                        <td>BK005</td>
+                        <td>Sports Plex</td>
+                        <td>7</td>
+                        <td>Sept 7, 2025 - 11:00 AM</td>
+                        <td>1 hour</td>
+                        <td>
+                            <button class="action-btn" onclick="editBooking()">Edit</button>
+                            <button class="action-btn" onclick="deleteBooking()">Delete</button>
                         </td>
                     </tr>
                 </tbody>
@@ -115,4 +124,5 @@
         });
     </script>
 </body>
+
 </html>
