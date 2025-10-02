@@ -20,14 +20,6 @@
         <div class="container">
         <h2>Login</h2>
 
-        <div th:if="${error}" class="alert error" role="alert">
-            <p th:text="${error}"></p>
-        </div>
-
-        <div th:if="${message}" class="alert error" role="alert">
-            <p th:text="${message}"></p>
-        </div>
-
         <!-- Sucess message after logout -->
         <div th:if="${param.logout}" style="color: green;">
             <p>You have been logged out successfully.</p>
