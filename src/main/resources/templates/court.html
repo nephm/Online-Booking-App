@@ -1,35 +1,51 @@
 <!DOCTYPE html>
-    <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <title>Badminton Court Booking</title>
-        <link th:href="@{/css/styles.css}" rel="stylesheet">
-        <link th:href="@{/css/court.css}" rel="stylesheet">
-        <script th:src="@{/js/script.js}" defer></script>
-    </head>
-    <body>
-    <div class="dashboard-container">
-        <header class="header">
-            <nav class="nav">
-                <div class="logo">CourtBooker</div>
-                <div class="nav-links">
-                    <a th:href="@{/venues}" class="nav-link">Venues</a>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Badminton Court Booking</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+    <link th:href="@{/court.css}" rel="stylesheet">
+    <script th:src="@{/script.js}" defer></script>
+</head>
+<body>
+<div class="dashboard-container">
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">CourtBooker</div>
+            <div class="nav-links">
+                <a th:href="@{/venues}" class="nav-link">Venues</a>
+                <a th:href="@{/admin}" class="nav-link">Admin</a>
+                <a th:href="@{/about}" class="nav-link">About</a>
+                <a th:href="@{/contacts}" class="nav-link">Contacts</a>
+                <div class="auth-buttons">
+                    <a th:href="@{/login}" class="auth-btn login-btn">Login</a>
+                    <a th:href="@{/register}" class="auth-btn register-btn">Register</a>
                 </div>
             </nav>
         </header>
 
     <h1 class="venues-title">Elite Badminton Center</h1>
 
+    <!-- Error/Success Messages -->
+    <div th:if="${error}" class="alert alert-error" th:text="${error}" style="margin: 20px; padding: 15px; background: #fee; border: 1px solid #fcc; border-radius: 5px; color: #c00;"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}" style="margin: 20px; padding: 15px; background: #efe; border: 1px solid #cfc; border-radius: 5px; color: #0a0;"></div>
+
     <!-- Date Filter -->
     <form method="get" th:action="@{/venue/__${venue.venueId}__/courts}" class="date-filter-container">
         <label for="date" class="date-filter-label">Select Date:</label>
         <select id="date" name="date" class="date-select" onchange="this.form.submit()">
-            <option th:each="day : ${#numbers.sequence(1,30)}"
-                    th:value="${'2025-09-' + (day < 10 ? '0' + day : day)}"
-                    th:text="${'Sep ' + day}"
-                    th:selected="${selectedDate == T(java.time.LocalDate).parse('2025-09-' + (day < 10 ? '0' + day : day))}">
+            <option th:each="dateOption : ${availableDates}"
+                    th:value="${dateOption}"
+                    th:text="${#temporals.format(dateOption, 'MMM dd, yyyy')}"
+                    th:selected="${dateOption.equals(selectedDate)}">
             </option>
         </select>
+        <!-- Keep edit params in date filter -->
+        <input th:if="${editBookingId}" type="hidden" name="editBookingId" th:value="${editBookingId}">
+        <input th:if="${originalCourtId}" type="hidden" name="originalCourtId" th:value="${originalCourtId}">
+        <input th:if="${originalTimeslotId}" type="hidden" name="originalTimeslotId" th:value="${originalTimeslotId}">
+        <input th:if="${originalUserId}" type="hidden" name="originalUserId" th:value="${originalUserId}">
     </form>
 
     <!-- Legend -->
@@ -59,13 +75,19 @@
             </thead>
             <tbody>
                 <tr th:each="court : ${courts}">
-                    <td class="court-label" th:text="${court.court_name}"></td>
+
+                    <td class="court-label">
+                        <span th:text="${court.courtName}"></span>
+                    </td>
+
     
-                    <td th:each="slot : ${timeSlots}">
+                    <td th:each="slot : ${timeSlots}" th:with="slotKey=${court.courtId + '-' + slot.timeslotId}">
                         <input type="checkbox"
                             name="selectedSlots"
-                            th:value="${court.court_id + '-' + slot.timeslot_id + '-' + #temporals.format(selectedDate, 'yyyy-MM-dd')}"
-                            th:disabled="${availability[court.court_id + '-' + slot.timeslot_id]} == false" 
+
+                            th:value="${slotKey + '-' + #temporals.format(selectedDate, 'yyyy-MM-dd')}"
+                            th:disabled="${availability.get(slotKey) == null || availability.get(slotKey) == false}" 
+                            th:checked="${editMode && preSelectedSlot != null && preSelectedSlot.equals(slotKey)}"
                             class="timeslot-block"/>
                     </td>
                 </tr>
@@ -73,7 +95,8 @@
         </table>
     
         <div style="margin-top: 20px; text-align: center;">
-            <button type="submit" class="proceed-btn">Proceed to Book</button>
+            <button type="submit" class="proceed-btn" th:text="${submitButtonText ?: 'Proceed to Book'}">Proceed to Book</button>
+            <a th:if="${editMode}" th:href="@{/admin}" class="proceed-btn" style="background: #6b7280; margin-left: 10px; text-decoration: none; display: inline-block;">Cancel</a>
         </div>
     </form>
 </div>
