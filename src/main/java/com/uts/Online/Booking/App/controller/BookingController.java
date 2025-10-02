@@ -1,11 +1,9 @@
 package com.uts.Online.Booking.App.controller;
 
-import com.uts.Online.Booking.App.DAO.UserDAO;
-import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,14 +18,6 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private UserDAO userDAO;
-
-    private User getUser(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userDAO.findByEmail(auth.getName()).orElse(null);
-    }
 
     @PostMapping("/book")
     public String bookSlots(@RequestParam(value = "selectedSlots", required = false) List<String> selectedSlots,
@@ -46,38 +36,38 @@ public class BookingController {
         StringBuilder errorMessages = new StringBuilder();
         
         try {
-
-            Double totalAmount = bookingService.calculateTotalAmount(selectedSlots);
-            Long bookingId = null;
-
-            if(getUser() == null){
-                return "redirect:/login?message=Please log in to make a booking";
-            }
-
-            // Process each selected slot
             for (String slot : selectedSlots) {
                 logger.debug("Processing slot: {}", slot);
                 
-                // Split slot format: "courtId-timeslotId-date"
                 String[] parts = slot.split("-", 3);
                 
                 if (parts.length != 3) {
-
                     logger.error("Invalid slot format: {}", slot);
                     failureCount++;
                     errorMessages.append("Invalid slot format: ").append(slot).append("; ");
                     continue;
                 }
                 
-                Long courtId = Long.parseLong(parts[0]);
-                Long timeslotId = Long.parseLong(parts[1]);
-                LocalDate bookingDate = LocalDate.parse(parts[2]);
-                
-                System.out.println("Court: " + courtId + ", Timeslot: " + timeslotId + ", Date: " + bookingDate);
-
-                // Create the booking (assuming userId = 1 for now)
-                bookingId = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
-               
+                try {
+                    Long courtId = Long.parseLong(parts[0]);
+                    Long timeslotId = Long.parseLong(parts[1]);
+                    LocalDate bookingDate = LocalDate.parse(parts[2]);
+                    
+                    logger.info("Booking - Court: {}, Timeslot: {}, Date: {}", courtId, timeslotId, bookingDate);
+                    
+                    // TODO: Replace hardcoded userId with actual authenticated user
+                    bookingService.createBooking(courtId, timeslotId, bookingDate, 1L);
+                    successCount++;
+                    
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid number format in slot: {}", slot, e);
+                    failureCount++;
+                    errorMessages.append("Invalid number in slot data; ");
+                } catch (RuntimeException e) {
+                    logger.error("Error booking slot {}: {}", slot, e.getMessage());
+                    failureCount++;
+                    errorMessages.append(e.getMessage()).append("; ");
+                }
             }
             
             // Provide feedback based on results
@@ -116,12 +106,4 @@ public class BookingController {
         logger.debug("Displaying booking confirmation page");
         return "booking-confirmation";
     }
-    
-    //error page for later
-    // @GetMapping("/error")
-    // public String showErrorPage(@RequestParam(value = "message", required = false) String message, 
-    //                            Model model) {
-    //     model.addAttribute("errorMessage", message != null ? message : "An unexpected error occurred");
-    //     return "error"; // You'll need to create an error.html template
-    // }
 }
