@@ -190,7 +190,7 @@ public class CourtController {
             model.addAttribute("submitButtonText", "Proceed to Book");
             model.addAttribute("submitAction", "/book");
         }
-      
+
         return "court";
     }
 }
