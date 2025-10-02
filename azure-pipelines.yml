@@ -13,16 +13,6 @@ variables:
 
 steps:
 
-# Cache Maven dependencies for faster builds
-- task: Cache@2
-  displayName: 'Cache Maven dependencies'
-  inputs:
-    key: 'maven | "$(Agent.OS)" | **/pom.xml'
-    restoreKeys: |
-      maven | "$(Agent.OS)"
-      maven
-    path: $(MAVEN_CACHE_FOLDER)
-
 # Clean and compile
 - task: Maven@4
   displayName: 'Maven clean and compile'
