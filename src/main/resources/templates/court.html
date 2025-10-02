@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Badminton Court Booking</title>
-    <link th:href="@{/styles.css}" rel="stylesheet">
-    <link th:href="@{/court.css}" rel="stylesheet">
-    <script th:src="@{/script.js}" defer></script>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/court.css}" rel="stylesheet">
+    <script th:src="@{/js/script.js}" defer></script>
 </head>
 <body>
 <div class="dashboard-container">
@@ -22,10 +21,20 @@
                     <a th:href="@{/login}" class="auth-btn login-btn">Login</a>
                     <a th:href="@{/register}" class="auth-btn register-btn">Register</a>
                 </div>
-            </nav>
-        </header>
+            </div>
+        </nav>
+    </header>
 
-    <h1 class="venues-title">Elite Badminton Center</h1>
+    <h1 class="venues-title" th:text="${pageTitle ?: 'Elite Badminton Center'}">Elite Badminton Center</h1>
+
+    <!-- Edit Mode Notice -->
+    <div th:if="${editMode}" class="edit-notice">
+        <div class="edit-notice-content">
+            <span class="edit-icon">✏️</span>
+            <strong>Edit Mode:</strong> Select a new time slot for Booking #<span th:text="${editBookingId}"></span>
+            <br><small>Original slot: <span th:text="${originalDate}"></span></small>
+        </div>
+    </div>
 
     <!-- Error/Success Messages -->
     <div th:if="${error}" class="alert alert-error" th:text="${error}" style="margin: 20px; padding: 15px; background: #fee; border: 1px solid #fcc; border-radius: 5px; color: #c00;"></div>
@@ -65,7 +74,11 @@
     </div>
 
     <!-- Booking table -->
-    <form th:action="@{/book}" method="post">
+    <form th:action="${submitAction ?: '/book'}" method="post">
+        <!-- Hidden fields for edit mode -->
+        <input th:if="${editMode}" type="hidden" name="editBookingId" th:value="${editBookingId}">
+        <input th:if="${editMode}" type="hidden" name="originalUserId" th:value="${originalUserId}">
+        
         <table id="bookingTable">
             <thead>
                 <tr>
@@ -75,16 +88,13 @@
             </thead>
             <tbody>
                 <tr th:each="court : ${courts}">
-
                     <td class="court-label">
                         <span th:text="${court.courtName}"></span>
                     </td>
-
     
                     <td th:each="slot : ${timeSlots}" th:with="slotKey=${court.courtId + '-' + slot.timeslotId}">
                         <input type="checkbox"
                             name="selectedSlots"
-
                             th:value="${slotKey + '-' + #temporals.format(selectedDate, 'yyyy-MM-dd')}"
                             th:disabled="${availability.get(slotKey) == null || availability.get(slotKey) == false}" 
                             th:checked="${editMode && preSelectedSlot != null && preSelectedSlot.equals(slotKey)}"

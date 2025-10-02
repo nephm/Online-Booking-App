@@ -32,6 +32,30 @@ public class BookingService {
     @Autowired
     private TimeslotDAO timeslotDAO;
 
+    // update booking after payment
+    public void updateBookingStatus(Long bookingId, String status){
+        Booking booking = bookingDAO.findById(bookingId).orElseThrow();
+        booking.setStatus(status);
+        bookingDAO.save(booking);
+    }
+
+    //calculate total amount for multiple slots
+    public Double calculateTotalAmount(List<String> selectedSlots){
+        return selectedSlots.stream()
+            .mapToDouble(slot ->{
+                String[] parts = slot.split("-", 3);
+                
+                if (parts.length != 3) {
+                    return 0.0;
+                }
+                
+                Long courtId = Long.parseLong(parts[0]);
+                Court court = courtDAO.findById(courtId).orElse(null);
+                return court != null ? court.getHourlyRate() : 0.0;
+            })
+            .sum();
+    }
+
     public Booking createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
         logger.info("Creating booking - Court: {}, Timeslot: {}, Date: {}, User: {}", 
             courtId, timeslotId, bookingDate, userId);
