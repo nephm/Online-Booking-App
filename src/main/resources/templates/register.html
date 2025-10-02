@@ -19,6 +19,15 @@
         </header>
         <div class="container">
             <h2>Register Your Account</h2>
+
+            <div th:if="${error}" class="alert-error" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div th:if="${message}" class="alert-error" role="alert">
+                <p th:text="${message}"></p>
+            </div>
+
             <div class ="form-wrapper">
                 <form action="/register" method="post">
                     <label for="firstName">First Name:</label>

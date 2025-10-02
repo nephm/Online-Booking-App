@@ -1,5 +1,7 @@
 package com.uts.Online.Booking.App.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
@@ -22,5 +24,9 @@ public class UserService {
         return userDAO.findByEmail(email).orElse(null);
     }
 
+    public User getUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userDAO.findByEmail(auth.getName()).orElse(null);
+    }
 
 }

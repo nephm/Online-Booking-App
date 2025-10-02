@@ -1,11 +1,9 @@
 package com.uts.Online.Booking.App.controller;
 
-import com.uts.Online.Booking.App.DAO.UserDAO;
-import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
+import com.uts.Online.Booking.App.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,12 +18,7 @@ public class BookingController {
     private BookingService bookingService;
 
     @Autowired
-    private UserDAO userDAO;
-
-    private User getUser(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userDAO.findByEmail(auth.getName()).orElse(null);
-    }
+    private UserService userService;
 
     @PostMapping("/book")
     public String bookSlots(@RequestParam("selectedSlots") List<String> selectedSlots,
@@ -42,7 +35,7 @@ public class BookingController {
             Double totalAmount = bookingService.calculateTotalAmount(selectedSlots);
             Long bookingId = null;
 
-            if(getUser() == null){
+            if(userService.getUser() == null){
                 return "redirect:/login?message=Please log in to make a booking";
             }
 
@@ -65,7 +58,7 @@ public class BookingController {
                 System.out.println("Court: " + courtId + ", Timeslot: " + timeslotId + ", Date: " + bookingDate);
 
                 // Create the booking (assuming userId = 1 for now)
-                bookingId = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
+                bookingId = bookingService.createBooking(courtId, timeslotId, bookingDate, userService.getUser().getId());
                
             }
             
