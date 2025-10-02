@@ -6,7 +6,6 @@ import com.uts.Online.Booking.App.DAO.TimeslotDAO;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +13,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-
-import org.eclipse.angus.mail.handlers.multipart_mixed;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.Map;
 
 @Service
+@Transactional
 public class BookingService {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
 
     @Autowired
     private BookingDAO bookingDAO;
+
     @Autowired
     private CourtDAO courtDAO;
+
     @Autowired
     private TimeslotDAO timeslotDAO;
-    
+
     public Booking createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
         logger.info("Creating booking - Court: {}, Timeslot: {}, Date: {}, User: {}", 
             courtId, timeslotId, bookingDate, userId);
@@ -60,10 +60,9 @@ public class BookingService {
         Booking booking = new Booking();
         booking.setCourt(court);
         booking.setTimeslot(timeslot);
-        booking.setBooking_date(bookingDate);
-        booking.setStatus("BOOKED");
-        booking.setUserid(userId);
-        Booking savedBooking = bookingDAO.save(booking);
+        booking.setBookingDate(bookingDate);
+        booking.setUserId(userId);
+        booking.setStatus("CONFIRMED");
 
         Booking savedBooking = bookingDAO.save(booking);
         logger.info("Successfully created booking with ID: {}", savedBooking.getBookingId());
