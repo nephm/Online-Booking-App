@@ -1,6 +1,7 @@
 package com.uts.Online.Booking.App.controller;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
 import org.slf4j.Logger;
@@ -46,6 +47,8 @@ public class BookingController {
         int successCount = 0;
         int failureCount = 0;
         StringBuilder errorMessages = new StringBuilder();
+        Booking savedBooking = null;
+        Double totalAmount = bookingService.calculateTotalAmount(selectedSlots);
         
         try {
             for (String slot : selectedSlots) {
@@ -68,7 +71,7 @@ public class BookingController {
                     logger.info("Booking - Court: {}, Timeslot: {}, Date: {}", courtId, timeslotId, bookingDate);
                     
                     // TODO: Replace hardcoded userId with actual authenticated user
-                    bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
+                    savedBooking = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
                     successCount++;
                     
                 } catch (NumberFormatException e) {
@@ -88,7 +91,7 @@ public class BookingController {
                     "Your booking has been confirmed successfully! Booked " + successCount + " slot(s).");
                 redirectAttributes.addFlashAttribute("bookingCount", successCount);
                 logger.info("Booking successful: {} slot(s) booked", successCount);
-                return "redirect:/booking-confirmation";
+                return "redirect:/payment?bookingId=" + savedBooking.getBookingId() + "&amount=" + totalAmount;
                 
             } else if (successCount > 0 && failureCount > 0) {
                 redirectAttributes.addFlashAttribute("success", 
