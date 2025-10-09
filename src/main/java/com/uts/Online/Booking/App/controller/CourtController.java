@@ -4,7 +4,6 @@ import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
 import com.uts.Online.Booking.App.model.Venue;
-import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.CourtDAO;
 import com.uts.Online.Booking.App.DAO.TimeslotDAO;
 import com.uts.Online.Booking.App.DAO.VenueDAO;
@@ -35,9 +34,6 @@ public class CourtController {
 
     @Autowired
     private TimeslotDAO timeslotDAO;
-
-    @Autowired
-    private BookingDAO bookingDAO;
 
     @Autowired
     private VenueDAO venueDAO;

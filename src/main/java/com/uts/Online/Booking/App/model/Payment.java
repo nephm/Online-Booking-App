@@ -9,25 +9,35 @@ public class Payment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="payment_id")
     private Long paymentId;
 
+    @Column(name="booking_id")
     private Long bookingId;
 
+    @Column(name="user_id")
     private Long userId;
 
+    @Column(name="amount")
     private double amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(name="payment_type")
     private PaymentType paymentType;
 
+    @Column(name="credit_card_number")
     private String creditCardNumber;
 
+    @Column(name="credit_card_security_code")
     private String creditCardSecurityCode;
 
+    @Column(name="credit_card_expiry")
     private String creditCardExpiry;
 
+    @Column(name="status")
     private String status;
 
+    @Column(name="created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Payment() {}

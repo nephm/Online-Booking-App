@@ -32,6 +32,7 @@ public class BookingController {
         return userDAO.findByEmail(auth.getName()).orElse(null);
     }
 
+    @SuppressWarnings("null")
     @PostMapping("/book")
     public String bookSlots(@RequestParam(value = "selectedSlots", required = false) List<String> selectedSlots,
                            RedirectAttributes redirectAttributes) {
@@ -99,7 +100,7 @@ public class BookingController {
                 redirectAttributes.addFlashAttribute("error", 
                     failureCount + " slot(s) failed: " + errorMessages.toString());
                 logger.warn("Partial booking success: {} succeeded, {} failed", successCount, failureCount);
-                return "redirect:/booking-confirmation";
+                return "redirect:/payment?bookingId=" + savedBooking.getBookingId() + "&amount=" + totalAmount;
                 
             } else {
                 redirectAttributes.addFlashAttribute("error", 

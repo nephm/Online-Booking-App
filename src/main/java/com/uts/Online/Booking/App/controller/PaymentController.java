@@ -68,7 +68,7 @@ public class PaymentController {
 
     //get all payment history
     @GetMapping("/myPayments")
-    public String getPayment(Model m){
+    public String getPaymentHistory(Model m){
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User u = userDAO.findByEmail(auth.getName()).orElse(null);
@@ -77,9 +77,10 @@ public class PaymentController {
             List<Payment> payments = paymentDAO.findByUserId(u.getId());
             m.addAttribute("payments", payments);
             m.addAttribute("user", u);
+            return "payment-history";
         }
 
-        return "payment/history";
+        return "redirect:/login";
 
     }
 
