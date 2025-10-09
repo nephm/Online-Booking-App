@@ -1,9 +1,13 @@
 package com.uts.Online.Booking.App.controller;
 
+import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,6 +22,14 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private UserDAO userDAO;
+
+    private User getUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userDAO.findByEmail(auth.getName()).orElse(null);
+    }
 
     @PostMapping("/book")
     public String bookSlots(@RequestParam(value = "selectedSlots", required = false) List<String> selectedSlots,
@@ -56,7 +68,7 @@ public class BookingController {
                     logger.info("Booking - Court: {}, Timeslot: {}, Date: {}", courtId, timeslotId, bookingDate);
                     
                     // TODO: Replace hardcoded userId with actual authenticated user
-                    bookingService.createBooking(courtId, timeslotId, bookingDate, 1L);
+                    bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
                     successCount++;
                     
                 } catch (NumberFormatException e) {
