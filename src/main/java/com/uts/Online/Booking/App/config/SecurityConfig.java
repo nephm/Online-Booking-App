@@ -25,14 +25,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/", "/index", "/login", "/register", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll()
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/admin/**", "/roles/**", "/dashboard/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                     .loginPage("/login")
                     .successHandler((request, respone, authentication) ->{
                         if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                            respone.sendRedirect("/admin/dashboard");  
+                            respone.sendRedirect("/dashboard");  
                         } else {
                             respone.sendRedirect("/main");
                         }

@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.User;
 
@@ -27,6 +28,27 @@ public class UserService {
     public User getUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userDAO.findByEmail(auth.getName()).orElse(null);
+    }
+
+    public List<User> getAllUsers() {
+        return userDAO.findAll();
+    }
+
+    public void updateUserRole(Long userId, String role) {
+        User currentUser = getUser();
+        if (!"ROLE_ADMIN".equals(currentUser.getRole())) {
+            throw new RuntimeException("Only admins can modify roles");
+        }
+
+        if (!"ROLE_ADMIN".equals(role) && !"ROLE_USER".equals(role)) {
+            throw new IllegalArgumentException("Invalid role");
+        }
+
+        User userToUpdate = userDAO.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        userToUpdate.setRole(role);
+        userDAO.save(userToUpdate);
     }
 
 }

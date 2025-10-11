@@ -42,14 +42,10 @@ public class CustomerDetailsService implements UserDetailsService {
 
         //check user types and set roles
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        
+        authorities.add(new SimpleGrantedAuthority(u.getRole()));
 
-        if(u instanceof Admin){
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        } else if (u instanceof Player){
-            authorities.add(new SimpleGrantedAuthority("ROLE_PLAYER"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        } else{
+        if (!"ROLE_USER".equals(u.getRole())) {
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
