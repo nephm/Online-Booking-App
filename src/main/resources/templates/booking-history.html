@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment History</title>
+    <title>My Bookings</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/profile.css}">
     <script src="/js/script.js" defer></script>
@@ -28,7 +28,7 @@
                     <a href="/credit" class="nav-item">
                         <span>Credit</span>
                     </a>
-                    <a href="/My-Bookings" class="nav-item">
+                    <a href="/myBookings" class="nav-item">
                         <span>My Bookings</span>
                     </a>
                     <a href="/logout"class="nav-item">
@@ -39,24 +39,30 @@
         <!-- right content -->
         <main class="content">
             <div>
-                <h1>Payment History</h1>
+                <h1>Booking History</h1>
             </div>
             <div class="content-body">
-                <table class="profile-items">
+                <table class="booking-table">
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Amount</th>
-                            <th>Payment Method</th>
+                            <th>Court Number</th>
+                            <th>Venue Name</th>
+                            <th>Venue Location</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="payment : ${payments}">
-                            <td th:text="${payment.createdAt}"></td>
-                            <td th:text="${payment.amount}"></td>
-                            <td th:text="${payment.paymentType}"></td>
-                            <td th:text="${payment.status}"></td>
+                        <tr th:each="booking : ${bookings}">
+                            <td th:text="${booking.bookingDate}"></td>
+                            <td th:text="${booking.court.courtName}"></td>
+                            <td th:text="${booking.court.venue.venueName}"></td>
+                            <td th:text="${booking.court.venue.address}"></td>
+                            <td th:text="${booking.timeslot.startTime}"></td>
+                            <td th:text="${booking.timeslot.endTime}"></td>
+                            <td th:text="${booking.status}"></td>
                         </tr>
                     </tbody>
                 </table>

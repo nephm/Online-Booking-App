@@ -81,9 +81,9 @@ public class PaymentController {
         }
 
         return "redirect:/login";
-
     }
 
+    //start payment and check what type of payment the user is doing
     @PostMapping("/process")
     public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
                 @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m) {

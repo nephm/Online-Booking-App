@@ -1,5 +1,6 @@
 package com.uts.Online.Booking.App.controller;
 
+import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.User;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -25,8 +27,12 @@ public class BookingController {
     private BookingService bookingService;
 
     @Autowired
+    private BookingDAO bookingDAO;
+
+    @Autowired
     private UserDAO userDAO;
 
+    //get logged in user
     private User getUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userDAO.findByEmail(auth.getName()).orElse(null);
@@ -121,5 +127,19 @@ public class BookingController {
     public String showBookingConfirmation() {
         logger.debug("Displaying booking confirmation page");
         return "booking-confirmation";
+    }
+
+    //get all Bookings history
+    @GetMapping("/myBookings")
+    public String getBookingHistory(Model m){
+
+        if(getUser() != null){
+            List<Booking> bookings = bookingDAO.findByUserId(getUser().getId());
+            m.addAttribute("bookings", bookings);
+            m.addAttribute("user", getUser());
+            return "booking-history";
+        }
+
+        return "redirect:/login";
     }
 }

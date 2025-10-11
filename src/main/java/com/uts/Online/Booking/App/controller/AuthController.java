@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
@@ -124,6 +126,20 @@ public class AuthController {
     @GetMapping("/registration_email")
     public String getRegistrationEmailPage() {
         return "registration_email";
+    }
+
+    @GetMapping("/profile")
+    public String getProfilePage(Model m) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userDAO.findByEmail(email).orElse(null);
+
+        if(user == null){
+            return "redirect:/login";
+        }
+
+        m.addAttribute("user", user);
+        return "profile";
     }
     
 }
