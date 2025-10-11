@@ -18,7 +18,7 @@ public class Player extends User {
 
     public Player(){ super(); }
 
-    //new customer
+    //new player
     public Player(String firstName, String lastName, String email, String password, String phoneNumber, String address) {
         super( firstName, lastName, email, password, phoneNumber);
         this.address = address;
