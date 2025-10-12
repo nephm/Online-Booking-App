@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @Controller
 public class BookingController {
 
@@ -142,4 +143,107 @@ public class BookingController {
 
         return "redirect:/login";
     }
+
+    //edit booking
+    @PostMapping("/bookings/cancel/{id}")
+    public String cancelBooking(@PathVariable Long id, Model m, RedirectAttributes redirectAttributes) {
+        User user = getUser();
+
+        if(user == null){
+            return "redirect:/login";
+        }
+
+        try {
+            Booking booking = bookingService.getBookingById(id);
+
+            //verify booking belongs to user
+            if(!booking.getUserId().equals(user.getId())){
+                logger.warn("Unauthorized cancel attempt - User: {}, Booking: {}", user.getId(), id);
+                redirectAttributes.addFlashAttribute("error", "Unauthorized action");
+                return "redirect:/myBookings";
+            }
+
+            if(!booking.canBeModified()){
+                redirectAttributes.addFlashAttribute("error", "This booking can only be cancelled 24 hours in advance");
+                return "redirect:/myBookings";
+            }
+
+            bookingService.cancelBooking(id);
+            redirectAttributes.addFlashAttribute("success", "Booking cancelled successfully");
+            logger.info("Booking {} cancelled by user {}", id, user.getId());
+
+        } catch (Exception e) {
+            logger.error("Error cancelling booking {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Failed to cancel booking" + e.getMessage());
+        }
+
+        return "redirect:/myBookings";
+    }
+
+    //show edit form
+    @GetMapping("/bookings/edit/{id}")
+    public String editBookingForm(@PathVariable Long id, Model m, RedirectAttributes redirectAttributes) {
+        User user = getUser();
+
+        if(user == null){
+            return "redirect:/login";
+        }
+
+        try {
+            Booking booking = bookingService.getBookingById(id);
+
+            //verify user
+            if(!booking.getUserId().equals(user.getId())){
+                logger.warn("Unauthorized edit attempt - User: {}, Booking: {}", user.getId(), id);
+                redirectAttributes.addFlashAttribute("error", "Unauthorized action");
+                return "redirect:/myBookings";
+            }
+
+            if(!booking.canBeModified()){
+                redirectAttributes.addFlashAttribute("error", "This booking cannot be modified");
+                return "redirect:/myBookings";
+            }
+
+            m.addAttribute("booking", booking);
+            m.addAttribute("availableTimeslots", bookingService.getAvailableTimeslotsForEdit(id));
+
+            return "edit-booking";
+
+        } catch (Exception e) {
+            logger.error("Error loading edit form for booking {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Failed to load booking");
+            return "redirect:/myBookings";
+        }
+    }
+
+     //process edit
+    @PostMapping("/bookings/edit/{id}")
+    public String update(@PathVariable Long id, @RequestParam Long timeslotId, @RequestParam String date, RedirectAttributes redirectAttributes) {
+        User user = getUser();
+
+        if(user == null){
+            return "redirect:/login";
+        }
+
+        try {
+            Booking booking = bookingService.getBookingById(id);
+
+            //verify user
+            if(!booking.getUserId().equals(user.getId())){
+                redirectAttributes.addFlashAttribute("error", "Unauthorized action");
+                return "redirect:/myBookings";
+            }
+
+            bookingService.updateBookingForUsers(id, timeslotId, LocalDate.parse(date));
+            redirectAttributes.addFlashAttribute("success", "Booking updated successfully");
+            logger.info("Booking {} updating by user {}", id, user.getId());
+
+        } catch (Exception e) {
+            logger.error("Error updating booking {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Failed to update booking");
+        }
+
+        return "redirect:/myBookings";
+    }
+    
 }

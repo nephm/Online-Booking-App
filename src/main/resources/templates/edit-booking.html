@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Booking</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>My Account</h2>
+            </div>
+            <div class="nav-list">
+                <a href="/profile" class="nav-item">Profile</a>
+                <a href="/myPayments" class="nav-item">My Payments</a>
+                <a href="/credit" class="nav-item">Credit</a>
+                <a href="/myBookings" class="nav-item active">My Bookings</a>
+                <a href="/logout" class="nav-item">Logout</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="content-header">
+                <h1>Edit Booking</h1>
+                <a th:href="@{/myBookings}" class="btn-back">← Back to Bookings</a>
+            </div>
+
+            <div class="content-body">
+                <div class="booking-details-card">
+                    <h3>Current Booking Details</h3>
+                    <div class="detail-row">
+                        <span class="label">Court:</span>
+                        <span th:text="${booking.court.courtName}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Venue:</span>
+                        <span th:text="${booking.court.venue.venueName}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Current Date:</span>
+                        <span th:text="${#temporals.format(booking.bookingDate, 'EEEE, MMMM dd, yyyy')}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Current Time:</span>
+                        <span th:text="${booking.timeslot.startTime + ' - ' + booking.timeslot.endTime}"></span>
+                    </div>
+                </div>
+
+                <div class="edit-form-card">
+                    <h3>Update Booking</h3>
+                    <form th:action="@{/bookings/edit/{id}(id=${booking.bookingId})}" method="post">
+                        
+                        <div class="form-group">
+                            <label for="date">Select New Date:</label>
+                            <input type="date" 
+                                   id="date" 
+                                   name="date" 
+                                   th:value="${booking.bookingDate}"
+                                   th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="timeslotId">Select New Time Slot:</label>
+                            <select id="timeslotId" name="timeslotId" required>
+                                <option value="">-- Choose a time slot --</option>
+                                <option th:each="timeslot : ${availableTimeslots}"
+                                        th:value="${timeslot.timeslotId}"
+                                        th:text="${timeslot.startTime + ' - ' + timeslot.endTime}"
+                                        th:selected="${timeslot.timeslotId == booking.timeslot.timeslotId}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>Note:</strong> You can only modify bookings at least 24 hours in advance. 
+                            The same court will be used for the rescheduled booking.
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Booking</button>
+                            <a th:href="@{/myBookings}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

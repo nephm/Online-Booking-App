@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -223,5 +224,99 @@ public class BookingService {
         
         logger.info("=== Generated availability map with {} entries ===", availability.size());
         return availability;
+    }
+
+    //get all bookings by user ID
+    public List<Booking> getBookingsByUserId(Long userId){
+        if(userId == null){
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        logger.debug("Fetching bookings for user ID: ");
+        return bookingDAO.findByUserId(userId);
+    }
+
+    //cancel booking
+    @Transactional
+    public void cancelBooking(Long bookingId){
+        if(bookingId == null){
+            throw new IllegalArgumentException("Booking ID cannot be null");
+        }
+
+        logger.info("Cancelling booking with ID: {}", bookingId);
+
+        Booking booking = getBookingById(bookingId);
+        booking.setStatus("CANCELLED");
+        bookingDAO.save(booking);
+
+        logger.info("Successfully cancelled booking with ID: {}", bookingId);
+    }
+
+    //update booking with new timeslot and date
+    @Transactional
+    public void updateBookingForUsers(Long bookingId, Long newTimeslotId, LocalDate newDate){
+        logger.info("Update booking {} - New Timeslot: {}, New Date: {}",
+            bookingId, newTimeslotId, newDate);
+
+        if(bookingId == null || newTimeslotId == null || newDate == null){
+            throw new IllegalArgumentException("All parameters are required");
+        }
+
+        //check if new date is in the past
+        if(newDate.isBefore(LocalDate.now())){
+            throw new RuntimeException("Cannot book dates in the past");
+        }
+
+        Booking booking = getBookingById(bookingId);
+        Timeslot newTimeslot = timeslotDAO.findById(newTimeslotId)
+            .orElseThrow(() -> new RuntimeException("Timeslot not found"));
+        
+        //check if new timeslot is available
+        if(isSlotBookedExcluding(booking.getCourt().getCourtId(), newTimeslotId, newDate, bookingId)){
+            throw new RuntimeException("The selected time slot is already booked");
+        }
+
+        booking.setTimeslot(newTimeslot);
+        booking.setBookingDate(newDate);
+        bookingDAO.save(booking);
+
+        logger.info("Successfully updated booking with ID: {}", bookingId);
+    }
+
+    //get available timeslots for editing
+    public List<Timeslot> getAvailableTimeslotsForEdit(Long bookingId){
+        logger.info("Fetching available timeslots for editing booking {}", bookingId);
+
+        if(bookingId == null){
+            throw new IllegalArgumentException("Booking ID is required");
+        }
+
+        Booking currentBooking = getBookingById(bookingId);
+        Long courtId = currentBooking.getCourt().getCourtId();
+        LocalDate date = currentBooking.getBookingDate();
+
+        List<Timeslot> allTimeslots = timeslotDAO.findAll();
+
+        //get bookings for this court and date 
+        List<Booking> bookingsForDate = bookingDAO.findByCourtCourtIdAndBookingDate(courtId, date)
+            .stream()
+            .filter(booking -> !booking.getBookingId().equals(bookingId))
+            .collect(Collectors.toList());
+
+        //filter booked timeslots
+        List<Timeslot> availableTimeslots = allTimeslots.stream()
+            .filter(timeslot -> {
+                //include current booking timeslot as available
+                if(timeslot.getTimeslotId().equals(currentBooking.getTimeslot().getTimeslotId())){
+                    return true;
+                }
+                //check if timeslot is not booked
+                return bookingsForDate.stream()
+                    .noneMatch(booking -> booking.getTimeslot().getTimeslotId().equals(timeslot.getTimeslotId()));
+            })
+            .collect(Collectors.toList());
+
+        logger.info("Found {} available timeslots for editing", availableTimeslots.size());
+
+        return availableTimeslots;
     }
 }

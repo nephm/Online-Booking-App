@@ -20,6 +20,7 @@ public interface BookingDAO extends JpaRepository<Booking, Long> {
     List<Booking> findByUserId(Long userId);
 
     List<Booking> findByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(Long courtId, Long timeslotId, LocalDate bookingDate);
+    List<Booking> findByCourtCourtIdAndBookingDate(Long courtId, LocalDate date);
 
     boolean existsByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(Long courtId, Long timeslotId, LocalDate bookingDate);
 
