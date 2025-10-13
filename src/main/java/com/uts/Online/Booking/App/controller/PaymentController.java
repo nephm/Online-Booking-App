@@ -25,7 +25,7 @@ import com.uts.Online.Booking.App.service.CustomerDetailsService;
 import org.springframework.ui.Model;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/payment")
 public class PaymentController {
     
     private final PaymentDAO paymentDAO;
@@ -39,7 +39,7 @@ public class PaymentController {
     }
 
     //show payment form
-    @GetMapping("/payment")
+    @GetMapping("")
     public String showPaymentForm(@RequestParam Long bookingId, @RequestParam Double amount, Model m) {
         m.addAttribute("bookingId", bookingId);
         m.addAttribute("amount", amount);
@@ -68,7 +68,7 @@ public class PaymentController {
 
     //get all payment history
     @GetMapping("/myPayments")
-    public String getPayment(Model m){
+    public String getPaymentHistory(Model m){
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User u = userDAO.findByEmail(auth.getName()).orElse(null);
@@ -77,12 +77,13 @@ public class PaymentController {
             List<Payment> payments = paymentDAO.findByUserId(u.getId());
             m.addAttribute("payments", payments);
             m.addAttribute("user", u);
+            return "payment-history";
         }
 
-        return "payment/history";
-
+        return "redirect:/login";
     }
 
+    //start payment and check what type of payment the user is doing
     @PostMapping("/process")
     public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
                 @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m) {

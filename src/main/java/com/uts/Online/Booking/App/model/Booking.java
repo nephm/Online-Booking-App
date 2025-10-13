@@ -2,6 +2,7 @@ package com.uts.Online.Booking.App.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Bookings")
@@ -40,4 +41,17 @@ public class Booking {
     
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    @Transient
+    public boolean canBeModified(){
+        //can only modify bookings that are ato least a day before 
+        if (this.bookingDate == null || this.timeslot == null || this.timeslot.getStartTime() == null) {
+            return false;
+        }
+        LocalDateTime bookingDateTime = LocalDateTime.of(
+            this.bookingDate,
+            this.timeslot.getStartTime()
+        );
+        return LocalDateTime.now().plusHours(24).isBefore(bookingDateTime);
+    }
 }

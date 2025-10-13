@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+    <script src="/js/script.js" defer></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Left sidebar nav -->
+        <nav class="sidebar">
+            <a th:href="@{/main}" class="btn-back">← Back</a>
+            <div class="sidebar-header">
+                <h2>My Booking</h2>
+            </div>
+
+                <div class="nav-list">
+                    <a href="/profile" class="nav-item">
+                        <span>Profile</span>
+                    </a>
+                    <a href="/payment/myPayments" class="nav-item">
+                        <span>My Payments</span>
+                    </a>
+                    <a href="/credit" class="nav-item">
+                        <span>Credit</span>
+                    </a>
+                    <a href="/myBookings" class="nav-item">
+                        <span>My Bookings</span>
+                    </a>
+                    <a href="/logout"class="nav-item">
+                        <span>Logout</span>
+                    </a>
+            </div>
+        </nav>
+        <!-- right content -->
+        <main class="content">
+            <div th:if="${success}" class="alert-alert-success">
+                <span th:text="${success}"></span>
+            </div>
+
+            <div th:if="${error}" class="alert-alert-danger">
+                <span th:text="${error}"></span>
+            </div>
+            <div>
+                <h1>Booking History</h1>
+            </div>
+            <div class="content-body">
+
+                <div th:if="${bookings == null or bookings.isEmpty()}" class="no-bookings">
+                    <p>You dont't have any bookings yet.</p>
+                    <a href="/venues" class="btn btn-primary">Book a Court</a>
+                </div>
+
+                <!-- booking history -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Court Number</th>
+                            <th>Venue Name</th>
+                            <th>Venue Location</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="booking : ${bookings}">
+                            <td th:text="${booking.bookingDate}"></td>
+                            <td th:text="${booking.court.courtName}"></td>
+                            <td th:text="${booking.court.venue.venueName}"></td>
+                            <td th:text="${booking.court.venue.address}"></td>
+                            <td th:text="${booking.timeslot.startTime}"></td>
+                            <td th:text="${booking.timeslot.endTime}"></td>
+                            <td>
+                                <span th:class="${'status-' + booking.status.toLowerCase()}" th:text="${booking.status}"></span>
+                            </td>
+                            <td class="actions">
+                                <div th:if="${booking.status == 'CONFIRMED' or booking.status == 'PENDING_PAYMENT'}">
+                                    <a th:href="@{/bookings/edit/{id}(id=${booking.bookingId})}"
+                                        class="btn btn-edit"
+                                        th:if="${booking.canBeModified}">Edit
+                                    </a>
+                                    <form th:action="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
+                                        method="post"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('Are you sure you want to cancel?');">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-cancel">Cancel</button>
+                                    </form>
+                                </div>
+                                <span th:if="${booking.status == 'CANCELLED'}" class="text-muted">
+                                    Cancelled
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
