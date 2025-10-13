@@ -56,6 +56,7 @@ public class BookingService {
             .sum();
     }
 
+    // Creating the actual booking
     public Booking createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
         logger.info("Creating booking - Court: {}, Timeslot: {}, Date: {}, User: {}", 
             courtId, timeslotId, bookingDate, userId);
@@ -107,6 +108,7 @@ public class BookingService {
             .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
     }
 
+    // Updating a booking with parameters
     @Transactional
     public Booking updateBooking(Long bookingId, Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
         logger.info("Updating booking {} - Court: {}, Timeslot: {}, Date: {}, User: {}", 
@@ -146,6 +148,7 @@ public class BookingService {
         return updatedBooking;
     }
 
+    // Deleting booking
     public void deleteBooking(Long bookingId) {
         if (bookingId == null) {
             throw new IllegalArgumentException("Booking ID cannot be null");
@@ -162,6 +165,7 @@ public class BookingService {
         logger.info("Successfully deleted booking with ID: {}", bookingId);
     }
 
+    // Boolean result if a court is booked
     public boolean isSlotBooked(Long courtId, Long timeslotId, LocalDate date) {
         if (courtId == null || timeslotId == null || date == null) {
             return false;
@@ -181,6 +185,7 @@ public class BookingService {
             .anyMatch(booking -> !booking.getBookingId().equals(excludeBookingId));
     }
 
+    // Generate a availability map
     public Map<String, Boolean> getAvailabilityMap(Long venueId, LocalDate date, List<Court> courts, List<Timeslot> timeslots) {
         logger.info("=== Generating availability map for venue {} on {} ===", venueId, date);
         
@@ -203,7 +208,7 @@ public class BookingService {
                 
                 String key = court.getCourtId() + "-" + timeslot.getTimeslotId();
                 
-                // Check if this specific court-timeslot combination is booked
+                // Check if this specific court timeslot combination is booked
                 boolean isBooked = bookingsForDate.stream()
                     .anyMatch(booking -> 
                         booking.getCourt() != null && 

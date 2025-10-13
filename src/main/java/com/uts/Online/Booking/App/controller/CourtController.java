@@ -122,7 +122,7 @@ public class CourtController {
         model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("availableDates", availableDates);
 
-        // Check for edit mode - prioritize request parameters over flash attributes
+        // Check for edit mode prioritize request parameters over flash attributes
         boolean isEditMode = editBookingId != null || model.containsAttribute("editMode");
         
         if (isEditMode) {
