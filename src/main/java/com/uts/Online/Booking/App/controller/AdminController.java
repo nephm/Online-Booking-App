@@ -35,6 +35,7 @@ public class AdminController {
         return "admin";
     }
 
+    // Getting the selected booking and redirect to edit page
     @GetMapping("/edit/{bookingId}")
     public String editBookingRedirect(@PathVariable Long bookingId, 
                                      RedirectAttributes redirectAttributes) {
@@ -45,8 +46,7 @@ public class AdminController {
                 redirectAttributes.addFlashAttribute("error", "Booking not found");
                 return "redirect:/admin";
             }
-            
-            // Validate nested objects to prevent NullPointerException
+        
             if (booking.getCourt() == null) {
                 logger.error("Booking {} has no court assigned", bookingId);
                 redirectAttributes.addFlashAttribute("error", "Invalid booking data: No court assigned");
@@ -64,8 +64,8 @@ public class AdminController {
                 redirectAttributes.addFlashAttribute("error", "Invalid booking data: No timeslot assigned");
                 return "redirect:/admin";
             }
-            
-            // Pass parameters via URL query string
+
+            // Pass parameters through URL query
             Long venueId = booking.getCourt().getVenue().getVenueId();
             LocalDate bookingDate = booking.getBookingDate();
             Long courtId = booking.getCourt().getCourtId();
@@ -88,6 +88,7 @@ public class AdminController {
         }
     }
 
+    // Selecting a booking and update
     @PostMapping("/update-booking")
     public String updateBooking(@RequestParam(value = "selectedSlots", required = false) List<String> selectedSlots,
                                @RequestParam(required = false) Long editBookingId,
@@ -159,6 +160,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
+    // Deleting the provided booking ID
     @PostMapping("/delete/{bookingId}")
     public String deleteBooking(@PathVariable Long bookingId, 
                                RedirectAttributes redirectAttributes) {
@@ -180,6 +182,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
+    // Deleting the booking mapping
     @DeleteMapping("/api/booking/{bookingId}")
     @ResponseBody
     public String deleteBookingAjax(@PathVariable Long bookingId) {

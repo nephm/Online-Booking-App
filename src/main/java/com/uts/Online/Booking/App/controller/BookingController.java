@@ -44,6 +44,7 @@ public class BookingController {
     }
 
     @SuppressWarnings("null")
+    // Main processing for booking
     @PostMapping("/book")
     public String bookSlots(@RequestParam(value = "selectedSlots", required = false) List<String> selectedSlots,
                            RedirectAttributes redirectAttributes) {
@@ -97,7 +98,7 @@ public class BookingController {
                 }
             }
             
-            // Provide feedback based on results
+            // Giving user status of booking action
             if (successCount > 0 && failureCount == 0) {
                 redirectAttributes.addFlashAttribute("success", 
                     "Your booking has been confirmed successfully! Booked " + successCount + " slot(s).");
