@@ -22,4 +22,14 @@ public class HomeController {
     public String getVenues() {
         return "venues";
     }
+
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "dashboard";
+    }
+
+    @GetMapping("/roles")
+    public String roles() {
+        return "roles";
+    }
 }

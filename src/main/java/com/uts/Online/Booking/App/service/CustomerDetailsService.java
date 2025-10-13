@@ -43,15 +43,7 @@ public class CustomerDetailsService implements UserDetailsService {
         //check user types and set roles
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-        if(u instanceof Admin){
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        } else if (u instanceof Player){
-            authorities.add(new SimpleGrantedAuthority("ROLE_PLAYER"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        } else{
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
+        authorities.add(new SimpleGrantedAuthority(u.getRole()));
 
         return new org.springframework.security.core.userdetails.User(u.getEmail(), u.getPassword(), authorities);
     }

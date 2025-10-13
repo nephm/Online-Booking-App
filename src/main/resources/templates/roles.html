@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Role Management</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/roles.css}">
+    <script src="/js/script.js" defer></script>
+</head>
+<body>
+    <div class="dashboard-container">    
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">CourtBooker</div>
+                <div class="nav-links">
+                    <a href="/venues" class="nav-link">Venues</a>
+                    <a href="/admin" class="nav-link">Admin</a>
+                    <a href="/admin/roles" class="nav-link">Roles</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contacts.html" class="nav-link">Contacts</a>
+
+                    <div class="profile">
+                        <button class="profile-btn" onclick="window.location.href='/profile'">
+                            <img src="images/userProfile_logo.jpg" alt="User icon" class="icon">
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="user-table-container">
+        <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Current Role</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+                        <td th:text="${user.role}"></td>
+                        <td>
+                            <form th:action="@{/admin/setRole}" method="post" class="role-form">
+                                <input type="hidden" name="userId" th:value="${user.id}">
+                                <select name="role" class="role-select">
+                                    <option value="ROLE_USER" th:selected="${user.role == 'ROLE_USER'}">User</option>
+                                    <option value="ROLE_ADMIN" th:selected="${user.role == 'ROLE_ADMIN'}">Admin</option>
+                                </select>
+                                <button type="submit" class="role-btn">Update Role</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+             </table>
+        </div>
+    </div>
+</body>
+</html>
