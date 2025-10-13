@@ -16,7 +16,7 @@
         <nav class="sidebar">
             <a th:href="@{/main}" class="btn-back">← Back</a>
             <div class="sidebar-header">
-                <h2>My Booking</h2>
+                <h2>My Credit</h2>
             </div>
 
                 <div class="nav-list">
@@ -40,28 +40,12 @@
         <!-- right content -->
         <main class="content">
             <div>
-                <h1>Payment History</h1>
+                <h1>Credit Balance</h1>
+                <p class="amount">$<span th:text="${#numbers.formatDecimal(balance, 1, 'COMMA', 2, 'POINT')}"></span></p>
             </div>
-            <div class="content-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Payment Method</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="payment : ${payments}">
-                            <td th:text="${payment.createdAt}"></td>
-                            <td th:text="${payment.amount}"></td>
-                            <td th:text="${payment.paymentType}"></td>
-                            <td th:text="${payment.status}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            
+            
+            
         </main>
     </div>
 </body>
