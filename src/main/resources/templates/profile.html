@@ -13,6 +13,7 @@
         <div class="dashboard-container">
             <!-- Left sidebar nav -->
             <nav class="sidebar">
+                <a th:href="@{/main}" class="btn-back">← Back</a>
                 <div class="sidebar-header">
                     <h2>My Account</h2>
                 </div>
@@ -21,7 +22,7 @@
                     <a href="/profile" class="nav-item">
                         <span>Profile</span>
                     </a>
-                    <a href="/myPayments" class="nav-item">
+                    <a href="/payment/myPayments" class="nav-item">
                         <span>My Payments</span>
                     </a>
                     <a href="/credit" class="nav-item">

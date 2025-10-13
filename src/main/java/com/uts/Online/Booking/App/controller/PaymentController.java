@@ -25,7 +25,7 @@ import com.uts.Online.Booking.App.service.CustomerDetailsService;
 import org.springframework.ui.Model;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/payment")
 public class PaymentController {
     
     private final PaymentDAO paymentDAO;
@@ -39,7 +39,7 @@ public class PaymentController {
     }
 
     //show payment form
-    @GetMapping("/payment")
+    @GetMapping("")
     public String showPaymentForm(@RequestParam Long bookingId, @RequestParam Double amount, Model m) {
         m.addAttribute("bookingId", bookingId);
         m.addAttribute("amount", amount);

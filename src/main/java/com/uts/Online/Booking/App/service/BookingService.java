@@ -3,9 +3,13 @@ package com.uts.Online.Booking.App.service;
 import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.CourtDAO;
 import com.uts.Online.Booking.App.DAO.TimeslotDAO;
+import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
+import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.model.Timeslot;
+import com.uts.Online.Booking.App.model.User;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,9 @@ public class BookingService {
 
     @Autowired
     private TimeslotDAO timeslotDAO;
+
+    @Autowired 
+    private UserDAO userDAO;
 
     // update booking after payment
     public void updateBookingStatus(Long bookingId, String status){
@@ -318,5 +325,37 @@ public class BookingService {
         logger.info("Found {} available timeslots for editing", availableTimeslots.size());
 
         return availableTimeslots;
+    }
+
+    //Refund payments and turn into credits for cancelled bookings
+    @Transactional
+    public void cancelBookingWithRefund(Long bookingId){
+        if(bookingId == null){
+            throw new IllegalArgumentException("Booking ID cannot be null");
+        }
+
+        Booking booking = getBookingById(bookingId);
+        
+        //calculate refund amount based on hourly rate
+        Double refundAmount = booking.getCourt().getHourlyRate();
+
+        //Update booking status
+        booking.setStatus("CANCELLED");
+        bookingDAO.save(booking);
+
+        //add refund to player's credit balance
+        User u = userDAO.findById(booking.getUserId())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(u instanceof Player){
+            Player player = (Player) u;
+            Double currentBalance = player.getCreditBalance();
+            player.setCreditBalance(currentBalance + refundAmount);
+            userDAO.save(player);
+
+            logger.info("Added ${} credit to user {}'s account.", refundAmount, u.getId());
+        }
+
+        logger.info("Successfully cancelled booking with ID: {}.");
     }
 }

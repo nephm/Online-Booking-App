@@ -5,11 +5,15 @@ import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -132,12 +136,17 @@ public class BookingController {
 
     //get all Bookings history
     @GetMapping("/myBookings")
-    public String getBookingHistory(Model m){
+    public String getBookingHistory(Model m, HttpServletRequest request){
 
         if(getUser() != null){
             List<Booking> bookings = bookingDAO.findByUserId(getUser().getId());
             m.addAttribute("bookings", bookings);
             m.addAttribute("user", getUser());
+            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
+            if(csrfToken != null){
+                m.addAttribute("_csrf", csrfToken);
+            }
             return "booking-history";
         }
 
@@ -168,8 +177,10 @@ public class BookingController {
                 return "redirect:/myBookings";
             }
 
-            bookingService.cancelBooking(id);
-            redirectAttributes.addFlashAttribute("success", "Booking cancelled successfully");
+            //Cancel with refund
+            Double refundAmount = booking.getCourt().getHourlyRate();
+            bookingService.cancelBookingWithRefund(id);
+            redirectAttributes.addFlashAttribute("success", "Booking cancelled successfully. $" + refundAmount + " has been added to credit balance.");
             logger.info("Booking {} cancelled by user {}", id, user.getId());
 
         } catch (Exception e) {

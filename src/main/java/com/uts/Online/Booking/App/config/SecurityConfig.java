@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
 
@@ -22,10 +23,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
-                .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/", "/index", "/login", "/register", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/bookings/**").authenticated()
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -41,7 +42,7 @@ public class SecurityConfig {
                     .permitAll()
                 )
                 .logout(logout -> logout
-                    .logoutUrl("/logout")
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                     .logoutSuccessUrl("/")
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID", "BADMINSESSION")

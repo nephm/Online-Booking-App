@@ -8,7 +8,7 @@
     <script th:src="@{/js/script.js}" defer></script>
 </head>
 <body>
-    <form th:action="@{/process}" method="post" class="payment-form">
+    <form th:action="@{/payment/process}" method="post" class="payment-form">
         <h2>Payment Details</h2>
         <input type="hidden" name="bookingId" th:value="${bookingId}">
         <input type="hidden" name="amount" th:value="${amount}">
