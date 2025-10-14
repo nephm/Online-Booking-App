@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
@@ -31,6 +33,7 @@ public class AuthController {
         this.userDAO = userDAO;
     }
     
+    //show the login page and add error messages 
     @GetMapping("/login")
     public String showLogin(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, Model m, HttpSession session) {
         
@@ -43,6 +46,7 @@ public class AuthController {
         return "login"; // looks in templates/login.html
     }
 
+    //create a new email to be sent
     private void sendEmail(String to, String subject, String text){
         SimpleMailMessage message = new SimpleMailMessage();
          message.setTo(to);
@@ -51,30 +55,30 @@ public class AuthController {
          mailSender.send(message);
     }
 
-   @GetMapping("/activate")
-   public String activateAccount(@RequestParam("token") String token, Model m){
-      User u = userDAO.findByActivationToken(token);
-      if(u != null){
-        u.setActive(true);
-        u.setActivationToken(null);
-        userDAO.save(u);
-        m.addAttribute("status", "success");
-        m.addAttribute("message", "Your account has been successfully  activated"); 
-      } else{
-        m.addAttribute("status", "failed");
-        m.addAttribute("error", "Invalid activation link");
-      }
+    //set the account to be active afteremail verification and save the user into the database
+    @GetMapping("/activate")
+    public String activateAccount(@RequestParam("token") String token, Model m){
+        User u = userDAO.findByActivationToken(token);
+        if(u != null){
+            u.setActive(true);
+            u.setActivationToken(null);
+            userDAO.save(u);
+            m.addAttribute("status", "success");
+            m.addAttribute("message", "Your account has been successfully  activated"); 
+        } else{
+            m.addAttribute("status", "failed");
+            m.addAttribute("error", "Invalid activation link");
+        }
 
-      return "activation_status";
-}
-
-
+        return "activation_status";
+    }
 
     @GetMapping("/register")
     public String registerPage(){
         return "register";
     }
 
+    //create a new user in the database based on the given user details during regsiter
     @PostMapping("/register")
     public String RegisterUser(@RequestParam("firstName") String fname, @RequestParam("lastName") String lname, @RequestParam("email") String email, @RequestParam("password") String password, 
     @RequestParam("phoneNumber") String phoneNumber, Model m, HttpSession session){
@@ -124,6 +128,21 @@ public class AuthController {
     @GetMapping("/registration_email")
     public String getRegistrationEmailPage() {
         return "registration_email";
+    }
+
+    //show the profile page for the logged in user
+    @GetMapping("/profile")
+    public String getProfilePage(Model m) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userDAO.findByEmail(email).orElse(null);
+
+        if(user == null){
+            return "redirect:/login";
+        }
+
+        m.addAttribute("user", user);
+        return "profile";
     }
     
 }

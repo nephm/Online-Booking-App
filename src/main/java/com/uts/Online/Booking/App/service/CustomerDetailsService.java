@@ -57,6 +57,6 @@ public class CustomerDetailsService implements UserDetailsService {
     }
 
     public Player findByEmail(String email){
-        return playerDAO.findByEmail(email).orElse(null);
+        return playerDAO.findByEmail(email);
     }
 }

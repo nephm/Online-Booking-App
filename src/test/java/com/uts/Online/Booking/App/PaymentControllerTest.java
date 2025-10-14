@@ -11,8 +11,8 @@ import com.uts.Online.Booking.App.service.CustomerDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
@@ -30,16 +30,16 @@ public class PaymentControllerTest{
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private PaymentDAO paymentDAO;
 
-    @MockBean
+    @MockitoBean
     private UserDAO userDAO;
 
-    @MockBean
+    @MockitoBean
     private BookingService bookingService;
 
-    @MockBean
+    @MockitoBean
     private CustomerDetailsService uService;
 
     @Test //test credit card payment
@@ -58,7 +58,7 @@ public class PaymentControllerTest{
         when(paymentDAO.save(any(Payment.class))).thenReturn(mockPayment);
 
         // test
-        mockMvc.perform(post("/process")
+        mockMvc.perform(post("/payment/process")
                 .with(csrf())
                 .param("bookingId", "1")
                 .param("amount", "35.0")
@@ -87,7 +87,7 @@ public class PaymentControllerTest{
         when(paymentDAO.save(any(Payment.class))).thenReturn(mockPayment);
 
         // test
-        mockMvc.perform(post("/process")
+        mockMvc.perform(post("/payment/process")
                 .with(csrf())
                 .param("bookingId", "1")
                 .param("amount", "35.0")

@@ -3,9 +3,13 @@ package com.uts.Online.Booking.App.service;
 import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.CourtDAO;
 import com.uts.Online.Booking.App.DAO.TimeslotDAO;
+import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
+import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.model.Timeslot;
+import com.uts.Online.Booking.App.model.User;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,6 +36,9 @@ public class BookingService {
 
     @Autowired
     private TimeslotDAO timeslotDAO;
+
+    @Autowired 
+    private UserDAO userDAO;
 
     // update booking after payment
     public void updateBookingStatus(Long bookingId, String status){
@@ -228,5 +236,131 @@ public class BookingService {
         
         logger.info("=== Generated availability map with {} entries ===", availability.size());
         return availability;
+    }
+
+    //get all bookings by user ID
+    public List<Booking> getBookingsByUserId(Long userId){
+        if(userId == null){
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        logger.debug("Fetching bookings for user ID: ");
+        return bookingDAO.findByUserId(userId);
+    }
+
+    //cancel booking
+    @Transactional
+    public void cancelBooking(Long bookingId){
+        if(bookingId == null){
+            throw new IllegalArgumentException("Booking ID cannot be null");
+        }
+
+        logger.info("Cancelling booking with ID: {}", bookingId);
+
+        Booking booking = getBookingById(bookingId);
+        booking.setStatus("CANCELLED");
+        bookingDAO.save(booking);
+
+        logger.info("Successfully cancelled booking with ID: {}", bookingId);
+    }
+
+    //update booking with new timeslot and date
+    @Transactional
+    public void updateBookingForUsers(Long bookingId, Long newTimeslotId, LocalDate newDate){
+        logger.info("Update booking {} - New Timeslot: {}, New Date: {}",
+            bookingId, newTimeslotId, newDate);
+
+        if(bookingId == null || newTimeslotId == null || newDate == null){
+            throw new IllegalArgumentException("All parameters are required");
+        }
+
+        //check if new date is in the past
+        if(newDate.isBefore(LocalDate.now())){
+            throw new RuntimeException("Cannot book dates in the past");
+        }
+
+        Booking booking = getBookingById(bookingId);
+        Timeslot newTimeslot = timeslotDAO.findById(newTimeslotId)
+            .orElseThrow(() -> new RuntimeException("Timeslot not found"));
+        
+        //check if new timeslot is available
+        if(isSlotBookedExcluding(booking.getCourt().getCourtId(), newTimeslotId, newDate, bookingId)){
+            throw new RuntimeException("The selected time slot is already booked");
+        }
+
+        booking.setTimeslot(newTimeslot);
+        booking.setBookingDate(newDate);
+        bookingDAO.save(booking);
+
+        logger.info("Successfully updated booking with ID: {}", bookingId);
+    }
+
+    //get available timeslots for editing
+    public List<Timeslot> getAvailableTimeslotsForEdit(Long bookingId){
+        logger.info("Fetching available timeslots for editing booking {}", bookingId);
+
+        if(bookingId == null){
+            throw new IllegalArgumentException("Booking ID is required");
+        }
+
+        Booking currentBooking = getBookingById(bookingId);
+        Long courtId = currentBooking.getCourt().getCourtId();
+        LocalDate date = currentBooking.getBookingDate();
+
+        List<Timeslot> allTimeslots = timeslotDAO.findAll();
+
+        //get bookings for this court and date 
+        List<Booking> bookingsForDate = bookingDAO.findByCourtCourtIdAndBookingDate(courtId, date)
+            .stream()
+            .filter(booking -> !booking.getBookingId().equals(bookingId))
+            .collect(Collectors.toList());
+
+        //filter booked timeslots
+        List<Timeslot> availableTimeslots = allTimeslots.stream()
+            .filter(timeslot -> {
+                //include current booking timeslot as available
+                if(timeslot.getTimeslotId().equals(currentBooking.getTimeslot().getTimeslotId())){
+                    return true;
+                }
+                //check if timeslot is not booked
+                return bookingsForDate.stream()
+                    .noneMatch(booking -> booking.getTimeslot().getTimeslotId().equals(timeslot.getTimeslotId()));
+            })
+            .collect(Collectors.toList());
+
+        logger.info("Found {} available timeslots for editing", availableTimeslots.size());
+
+        return availableTimeslots;
+    }
+
+    //Refund payments and turn into credits for cancelled bookings
+    @Transactional
+    public void cancelBookingWithRefund(Long bookingId){
+        if(bookingId == null){
+            throw new IllegalArgumentException("Booking ID cannot be null");
+        }
+
+        Booking booking = getBookingById(bookingId);
+        
+        //calculate refund amount based on hourly rate
+        Double refundAmount = booking.getCourt().getHourlyRate();
+
+        //Update booking status
+        booking.setStatus("CANCELLED");
+        bookingDAO.save(booking);
+
+        //add refund to player's credit balance
+        User u = userDAO.findById(booking.getUserId())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(u instanceof Player){
+            Player player = (Player) u;
+            Double currentBalance = player.getCreditBalance();
+            player.setCreditBalance(currentBalance + refundAmount);
+            userDAO.save(player);
+
+            logger.info("Added ${} credit to user {}'s account.", refundAmount, u.getId());
+        }
+
+        logger.info("Successfully cancelled booking with ID: {}.");
     }
 }
