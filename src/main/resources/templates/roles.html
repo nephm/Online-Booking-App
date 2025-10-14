@@ -50,7 +50,7 @@
                             <form th:action="@{/admin/setRole}" method="post" class="role-form">
                                 <input type="hidden" name="userId" th:value="${user.id}">
                                 <select name="role" class="role-select">
-                                    <option value="ROLE_USER" th:selected="${user.role == 'ROLE_USER'}">User</option>
+                                    <option value="ROLE_PLAYER" th:selected="${user.role == 'ROLE_PLAYER'}">Player</option>
                                     <option value="ROLE_ADMIN" th:selected="${user.role == 'ROLE_ADMIN'}">Admin</option>
                                 </select>
                                 <button type="submit" class="role-btn">Update Role</button>

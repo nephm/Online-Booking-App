@@ -29,7 +29,7 @@ public class UserService {
     }
 
     public void updateUserRole(Long userId, String role) {
-        if (!"ROLE_ADMIN".equals(role) && !"ROLE_USER".equals(role)) {
+        if (!"ROLE_ADMIN".equals(role) && !"ROLE_PLAYER".equals(role)) {
             throw new IllegalArgumentException("Invalid role");
         }
 
