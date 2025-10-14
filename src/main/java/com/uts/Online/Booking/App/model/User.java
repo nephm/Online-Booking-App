@@ -109,4 +109,15 @@ public class User implements Serializable{
     public void setActivationToken(String verificationToken) {
         this.activationToken = verificationToken;
     }
+
+    @Column(name = "role", nullable = false)
+    private String role = "ROLE_USER"; // Default role
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

@@ -25,6 +25,7 @@ public class SecurityConfig {
         http
                     .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/", "/index", "/login", "/register", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                    .requestMatchers("/admin/**", "/roles/**", "/dashboard/**").hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/bookings/**").authenticated()
                     .anyRequest().authenticated()
@@ -33,7 +34,7 @@ public class SecurityConfig {
                     .loginPage("/login")
                     .successHandler((request, respone, authentication) ->{
                         if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                            respone.sendRedirect("/admin/dashboard");  
+                            respone.sendRedirect("/dashboard");  
                         } else {
                             respone.sendRedirect("/main");
                         }

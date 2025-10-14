@@ -1,7 +1,10 @@
 package com.uts.Online.Booking.App.controller;
 
+import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.service.BookingService;
+import com.uts.Online.Booking.App.service.UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ public class AdminController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public String admin(Model model) {
@@ -200,5 +206,32 @@ public class AdminController {
             logger.error("Error in AJAX delete for booking {}", bookingId, e);
             return "ERROR: " + e.getMessage();
         }
+    }
+
+    @GetMapping("/users")
+    public String viewAllUsers(Model model) {
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin-users"; 
+    }
+
+    @GetMapping("/roles")
+    public String viewRoles(Model model) {
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "roles";
+    }
+
+    @PostMapping("/setRole")
+    public String setUserRole(@RequestParam Long userId,
+                            @RequestParam String role,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateUserRole(userId, role);
+            redirectAttributes.addFlashAttribute("successMessage", "Role updated successfully!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/roles"; 
     }
 }
