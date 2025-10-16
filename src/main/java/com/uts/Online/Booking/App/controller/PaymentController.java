@@ -9,24 +9,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 import com.uts.Online.Booking.App.DAO.PaymentDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Payment;
 import com.uts.Online.Booking.App.model.PaymentType;
 import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.model.User;
 import com.uts.Online.Booking.App.service.BookingService;
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
+import com.uts.Online.Booking.App.service.EmailService;
 
 import org.springframework.ui.Model;
 
 @Controller
 @RequestMapping("/payment")
 public class PaymentController {
+
+    @Autowired
+    private EmailService emailService;
     
     private final PaymentDAO paymentDAO;
     private final UserDAO userDAO;
@@ -133,7 +139,19 @@ public class PaymentController {
 
         if("SUCCESS".equals(saved_payment.getStatus())){
             bookingService.updateBookingStatus(bookingId, "CONFIRMED");
+
+            Booking booking = bookingService.getBookingById(bookingId);
+
+            try {
+                emailService.sendBookingConfirmationEmail(u, List.of(booking), amount);
+                System.out.println("Confirmation email sent to " + u.getEmail());
+            } catch (Exception e) {
+                System.out.println("Failed to send confirmation email: " + e.getMessage());
+                e.printStackTrace();
+            }
+
             return "redirect:/booking-confirmation";
+
         } else{
             bookingService.updateBookingStatus(bookingId, "FAILED");
             return "payment_failed";
