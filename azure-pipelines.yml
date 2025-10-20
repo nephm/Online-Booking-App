@@ -79,14 +79,13 @@ steps:
     publishLocation: 'Container'
   condition: succeeded()
 
-# Deploy to Azure Web App
+# Deploy to Azure Web App (Windows)
 - task: AzureWebApp@1
   displayName: 'Deploy to Azure Web App'
   inputs:
-    azureSubscription: 'YOUR_SERVICE_CONNECTION_NAME'
-    appType: 'webAppLinux'
-    appName: 'YOUR_WEB_APP_NAME'
+    azureSubscription: 'ASD Deployment'
+    appType: 'webApp'
+    appName: 'BadmintonBooking'
     package: '$(Build.ArtifactStagingDirectory)/*.jar'
-    runtimeStack: 'JAVA|21-java21'
-    startUpCommand: 'java -jar /home/site/wwwroot/*.jar'
+    deploymentMethod: 'zipDeploy'
   condition: succeeded()
