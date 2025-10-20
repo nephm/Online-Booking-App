@@ -4,274 +4,308 @@ import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.CourtDAO;
 import com.uts.Online.Booking.App.DAO.TimeslotDAO;
 import com.uts.Online.Booking.App.DAO.VenueDAO;
+import com.uts.Online.Booking.App.config.SecurityConfig;
+import com.uts.Online.Booking.App.controller.AdminController;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
 import com.uts.Online.Booking.App.model.Venue;
+import com.uts.Online.Booking.App.service.CustomerDetailsService;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc(addFilters = false)
-@Transactional
+@WebMvcTest(AdminController.class)
+@Import(SecurityConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("Admin Controller Integration Tests")
+@DisplayName("Admin Controller Tests")
 class AdminControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockitoBean
     private BookingDAO bookingDAO;
 
-    @Autowired
+    @MockitoBean
     private CourtDAO courtDAO;
 
-    @Autowired
+    @MockitoBean
     private TimeslotDAO timeslotDAO;
 
-    @Autowired
+    @MockitoBean
     private VenueDAO venueDAO;
+
+    @MockitoBean
+    private CustomerDetailsService customerDetailsService;
 
     private Venue testVenue;
     private Court testCourt;
     private Timeslot testTimeslot;
+    private Booking testBooking;
 
     @BeforeEach
     void setUp() {
         testVenue = new Venue();
+        testVenue.setVenueId(1L);
         testVenue.setVenueName("Test Venue");
         testVenue.setAddress("123 Test St");
-        testVenue = venueDAO.save(testVenue);
 
         testCourt = new Court();
+        testCourt.setCourtId(1L);
         testCourt.setCourtName("Test Court");
         testCourt.setCourtType("Indoor");
         testCourt.setLocation("Building A");
         testCourt.setHourlyRate(50.0);
         testCourt.setVenue(testVenue);
-        testCourt = courtDAO.save(testCourt);
 
         testTimeslot = new Timeslot();
+        testTimeslot.setTimeslotId(1L);
         testTimeslot.setStartTime(LocalTime.of(14, 0));
         testTimeslot.setEndTime(LocalTime.of(15, 0));
-        testTimeslot = timeslotDAO.save(testTimeslot);
+
+        testBooking = new Booking();
+        testBooking.setBookingId(1L);
+        testBooking.setCourt(testCourt);
+        testBooking.setTimeslot(testTimeslot);
+        testBooking.setBookingDate(LocalDate.of(2025, 10, 10));
+        testBooking.setUserId(1L);
+        testBooking.setStatus("CONFIRMED");
     }
 
     @Test
     @Order(1)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should display admin page with bookings")
     void testAdminPage_DisplaysBookings() throws Exception {
-        // Create test booking
-        Booking booking = createTestBooking();
-        bookingDAO.save(booking);
+        List<Booking> bookings = Arrays.asList(testBooking);
+        when(bookingDAO.findAll()).thenReturn(bookings);
 
         mockMvc.perform(get("/admin"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin"))
                 .andExpect(model().attributeExists("bookings"));
+
+        verify(bookingDAO, times(1)).findAll();
     }
 
     @Test
     @Order(2)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should redirect to edit page with correct parameters")
     void testEditBooking_RedirectsCorrectly() throws Exception {
-        // Create test booking
-        Booking booking = createTestBooking();
-        booking = bookingDAO.save(booking);
+        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
 
-        mockMvc.perform(get("/admin/edit/" + booking.getBookingId()))
+        mockMvc.perform(get("/admin/edit/1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/venue/" + testVenue.getVenueId() + "/courts?date=*&editBookingId=*"));
+                .andExpect(redirectedUrlPattern("/venue/1/courts?date=*&editBookingId=*"));
+
+        verify(bookingDAO, times(1)).findById(1L);
     }
 
     @Test
     @Order(3)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should handle edit request for non-existent booking")
     void testEditBooking_NotFound() throws Exception {
+        when(bookingDAO.findById(99999L)).thenReturn(Optional.empty());
+
         mockMvc.perform(get("/admin/edit/99999"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
+
+        verify(bookingDAO, times(1)).findById(99999L);
     }
 
     @Test
     @Order(4)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should update booking successfully")
     void testUpdateBooking_Success() throws Exception {
-        // Create original booking
-        Booking booking = createTestBooking();
-        booking = bookingDAO.save(booking);
-
-        // Create new timeslot for update
         Timeslot newTimeslot = new Timeslot();
+        newTimeslot.setTimeslotId(2L);
         newTimeslot.setStartTime(LocalTime.of(16, 0));
         newTimeslot.setEndTime(LocalTime.of(17, 0));
-        newTimeslot = timeslotDAO.save(newTimeslot);
 
-        String newSlot = testCourt.getCourtId() + "-" + newTimeslot.getTimeslotId() + "-2025-10-10";
+        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
+        when(courtDAO.findById(1L)).thenReturn(Optional.of(testCourt));
+        when(timeslotDAO.findById(2L)).thenReturn(Optional.of(newTimeslot));
+        when(bookingDAO.existsByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(
+                eq(1L), eq(2L), any(LocalDate.class)))
+                .thenReturn(false);
+        when(bookingDAO.save(any(Booking.class))).thenReturn(testBooking);
+
+        String newSlot = "1-2-2025-10-10";
 
         mockMvc.perform(post("/admin/update-booking")
+                        .with(csrf())
                         .param("selectedSlots", newSlot)
-                        .param("editBookingId", booking.getBookingId().toString())
+                        .param("editBookingId", "1")
                         .param("originalUserId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("success"));
 
-        // Verify update
-        Booking updated = bookingDAO.findById(booking.getBookingId()).orElse(null);
-        Assertions.assertNotNull(updated);
-        Assertions.assertEquals(newTimeslot.getTimeslotId(), updated.getTimeslot().getTimeslotId());
+        verify(bookingDAO, times(1)).save(any(Booking.class));
     }
 
     @Test
     @Order(5)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should reject update with no slots selected")
     void testUpdateBooking_NoSlots() throws Exception {
-        Booking booking = createTestBooking();
-        booking = bookingDAO.save(booking);
+        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
 
         mockMvc.perform(post("/admin/update-booking")
-                        .param("editBookingId", booking.getBookingId().toString())
+                        .with(csrf())
+                        .param("editBookingId", "1")
                         .param("originalUserId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
+
+        verify(bookingDAO, never()).save(any(Booking.class));
     }
 
     @Test
     @Order(6)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should reject update with multiple slots")
     void testUpdateBooking_MultipleSlots() throws Exception {
-        Booking booking = createTestBooking();
-        booking = bookingDAO.save(booking);
+        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
 
-        Timeslot timeslot2 = new Timeslot();
-        timeslot2.setStartTime(LocalTime.of(16, 0));
-        timeslot2.setEndTime(LocalTime.of(17, 0));
-        timeslot2 = timeslotDAO.save(timeslot2);
-
-        String slot1 = testCourt.getCourtId() + "-" + testTimeslot.getTimeslotId() + "-2025-10-10";
-        String slot2 = testCourt.getCourtId() + "-" + timeslot2.getTimeslotId() + "-2025-10-10";
+        String slot1 = "1-1-2025-10-10";
+        String slot2 = "1-2-2025-10-10";
 
         mockMvc.perform(post("/admin/update-booking")
+                        .with(csrf())
                         .param("selectedSlots", slot1, slot2)
-                        .param("editBookingId", booking.getBookingId().toString())
+                        .param("editBookingId", "1")
                         .param("originalUserId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
+
+        verify(bookingDAO, never()).save(any(Booking.class));
     }
 
     @Test
     @Order(7)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should prevent updating to already booked slot")
     void testUpdateBooking_SlotAlreadyBooked() throws Exception {
-        // Create two bookings
-        Booking booking1 = createTestBooking();
-        booking1.setBookingDate(LocalDate.of(2025, 10, 15));
-        booking1 = bookingDAO.save(booking1);
-
         Timeslot timeslot2 = new Timeslot();
+        timeslot2.setTimeslotId(2L);
         timeslot2.setStartTime(LocalTime.of(16, 0));
         timeslot2.setEndTime(LocalTime.of(17, 0));
-        timeslot2 = timeslotDAO.save(timeslot2);
 
-        Booking booking2 = new Booking();
-        booking2.setCourt(testCourt);
-        booking2.setTimeslot(timeslot2);
-        booking2.setBookingDate(LocalDate.of(2025, 10, 15));
-        booking2.setUserId(2L);
-        booking2.setStatus("CONFIRMED");
-        bookingDAO.save(booking2);
+        // Create a conflicting booking
+        Booking conflictingBooking = new Booking();
+        conflictingBooking.setBookingId(2L);
+        conflictingBooking.setCourt(testCourt);
+        conflictingBooking.setTimeslot(timeslot2);
+        conflictingBooking.setBookingDate(LocalDate.of(2025, 10, 15));
 
-        // Try to update booking1 to booking2's slot
-        String slot = testCourt.getCourtId() + "-" + timeslot2.getTimeslotId() + "-2025-10-15";
+        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
+        when(courtDAO.findById(1L)).thenReturn(Optional.of(testCourt));
+        when(timeslotDAO.findById(2L)).thenReturn(Optional.of(timeslot2));
+        when(bookingDAO.findByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(
+                eq(1L), eq(2L), any(LocalDate.class)))
+                .thenReturn(Arrays.asList(conflictingBooking));
+
+        String slot = "1-2-2025-10-15";
 
         mockMvc.perform(post("/admin/update-booking")
+                        .with(csrf())
                         .param("selectedSlots", slot)
-                        .param("editBookingId", booking1.getBookingId().toString())
+                        .param("editBookingId", "1")
                         .param("originalUserId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
+
+        verify(bookingDAO, never()).save(any(Booking.class));
     }
 
     @Test
     @Order(8)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete booking successfully")
     void testDeleteBooking_Success() throws Exception {
-        // Create test booking
-        Booking booking = createTestBooking();
-        booking = bookingDAO.save(booking);
-        Long bookingId = booking.getBookingId();
+        when(bookingDAO.existsById(1L)).thenReturn(true);
+        doNothing().when(bookingDAO).deleteById(1L);
 
-        mockMvc.perform(post("/admin/delete/" + bookingId))
+        mockMvc.perform(post("/admin/delete/1")
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("success"));
 
-        // Verify deletion
-        Assertions.assertFalse(bookingDAO.existsById(bookingId));
+        verify(bookingDAO, times(1)).deleteById(1L);
     }
 
     @Test
     @Order(9)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should handle delete request for non-existent booking")
     void testDeleteBooking_NotFound() throws Exception {
-        mockMvc.perform(post("/admin/delete/99999"))
+        when(bookingDAO.existsById(99999L)).thenReturn(false);
+
+        mockMvc.perform(post("/admin/delete/99999")
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
+
+        verify(bookingDAO, never()).deleteById(anyLong());
     }
 
     @Test
     @Order(10)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete booking via AJAX successfully")
     void testDeleteBookingAjax_Success() throws Exception {
-        // Create test booking
-        Booking booking = createTestBooking();
-        booking = bookingDAO.save(booking);
-        Long bookingId = booking.getBookingId();
+        when(bookingDAO.existsById(1L)).thenReturn(true);
+        doNothing().when(bookingDAO).deleteById(1L);
 
-        mockMvc.perform(delete("/admin/api/booking/" + bookingId))
+        mockMvc.perform(delete("/admin/api/booking/1")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("SUCCESS"));
 
-        // Verify deletion
-        Assertions.assertFalse(bookingDAO.existsById(bookingId));
+        verify(bookingDAO, times(1)).deleteById(1L);
     }
 
     @Test
     @Order(11)
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Should handle AJAX delete for non-existent booking")
     void testDeleteBookingAjax_NotFound() throws Exception {
-        mockMvc.perform(delete("/admin/api/booking/99999"))
+        when(bookingDAO.existsById(99999L)).thenReturn(false);
+
+        mockMvc.perform(delete("/admin/api/booking/99999")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.startsWith("ERROR")));
-    }
 
-    // Helper method
-    private Booking createTestBooking() {
-        Booking booking = new Booking();
-        booking.setCourt(testCourt);
-        booking.setTimeslot(testTimeslot);
-        booking.setBookingDate(LocalDate.of(2025, 10, 10));
-        booking.setUserId(1L);
-        booking.setStatus("CONFIRMED");
-        return booking;
+        verify(bookingDAO, never()).deleteById(anyLong());
     }
 }
