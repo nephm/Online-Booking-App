@@ -11,6 +11,8 @@ import com.uts.Online.Booking.App.model.Court;
 import com.uts.Online.Booking.App.model.Timeslot;
 import com.uts.Online.Booking.App.model.Venue;
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
+import com.uts.Online.Booking.App.service.BookingService;
+import com.uts.Online.Booking.App.service.UserService;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,12 @@ class AdminControllerTest {
     @MockitoBean
     private CustomerDetailsService customerDetailsService;
 
+    @MockitoBean
+    private BookingService bookingService;
+
+    @MockitoBean
+    private UserService userService;
+    
     private Venue testVenue;
     private Court testCourt;
     private Timeslot testTimeslot;
@@ -96,14 +104,14 @@ class AdminControllerTest {
     @DisplayName("Should display admin page with bookings")
     void testAdminPage_DisplaysBookings() throws Exception {
         List<Booking> bookings = Arrays.asList(testBooking);
-        when(bookingDAO.findAll()).thenReturn(bookings);
+        when(bookingService.getAllBookings()).thenReturn(bookings);
 
         mockMvc.perform(get("/admin"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin"))
                 .andExpect(model().attributeExists("bookings"));
 
-        verify(bookingDAO, times(1)).findAll();
+        verify(bookingService, times(1)).getAllBookings();
     }
 
     @Test
@@ -111,13 +119,13 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should redirect to edit page with correct parameters")
     void testEditBooking_RedirectsCorrectly() throws Exception {
-        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
+        when(bookingService.getBookingById(1L)).thenReturn(testBooking);
 
         mockMvc.perform(get("/admin/edit/1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/venue/1/courts?date=*&editBookingId=*"));
 
-        verify(bookingDAO, times(1)).findById(1L);
+        verify(bookingService, times(1)).getBookingById(1L);
     }
 
     @Test
@@ -125,14 +133,14 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should handle edit request for non-existent booking")
     void testEditBooking_NotFound() throws Exception {
-        when(bookingDAO.findById(99999L)).thenReturn(Optional.empty());
+        when(bookingService.getBookingById(99999L)).thenReturn(null);
 
         mockMvc.perform(get("/admin/edit/99999"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingDAO, times(1)).findById(99999L);
+        verify(bookingService, times(1)).getBookingById(99999L);
     }
 
     @Test
@@ -140,18 +148,9 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should update booking successfully")
     void testUpdateBooking_Success() throws Exception {
-        Timeslot newTimeslot = new Timeslot();
-        newTimeslot.setTimeslotId(2L);
-        newTimeslot.setStartTime(LocalTime.of(16, 0));
-        newTimeslot.setEndTime(LocalTime.of(17, 0));
-
-        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
-        when(courtDAO.findById(1L)).thenReturn(Optional.of(testCourt));
-        when(timeslotDAO.findById(2L)).thenReturn(Optional.of(newTimeslot));
-        when(bookingDAO.existsByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(
-                eq(1L), eq(2L), any(LocalDate.class)))
-                .thenReturn(false);
-        when(bookingDAO.save(any(Booking.class))).thenReturn(testBooking);
+        when(bookingService.updateBooking(
+                anyLong(), anyLong(), anyLong(), any(LocalDate.class), anyLong()))
+                .thenReturn(testBooking);
 
         String newSlot = "1-2-2025-10-10";
 
@@ -164,7 +163,8 @@ class AdminControllerTest {
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("success"));
 
-        verify(bookingDAO, times(1)).save(any(Booking.class));
+        verify(bookingService, times(1)).updateBooking(
+                anyLong(), anyLong(), anyLong(), any(LocalDate.class), anyLong());
     }
 
     @Test
@@ -172,8 +172,6 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should reject update with no slots selected")
     void testUpdateBooking_NoSlots() throws Exception {
-        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
-
         mockMvc.perform(post("/admin/update-booking")
                         .with(csrf())
                         .param("editBookingId", "1")
@@ -182,7 +180,7 @@ class AdminControllerTest {
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingDAO, never()).save(any(Booking.class));
+        verify(bookingService, never()).updateBooking(anyLong(), anyLong(), anyLong(), any(LocalDate.class), anyLong());
     }
 
     @Test
@@ -190,8 +188,6 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should reject update with multiple slots")
     void testUpdateBooking_MultipleSlots() throws Exception {
-        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
-
         String slot1 = "1-1-2025-10-10";
         String slot2 = "1-2-2025-10-10";
 
@@ -204,7 +200,7 @@ class AdminControllerTest {
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingDAO, never()).save(any(Booking.class));
+        verify(bookingService, never()).updateBooking(anyLong(), anyLong(), anyLong(), any(LocalDate.class), anyLong());
     }
 
     @Test
@@ -212,24 +208,9 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should prevent updating to already booked slot")
     void testUpdateBooking_SlotAlreadyBooked() throws Exception {
-        Timeslot timeslot2 = new Timeslot();
-        timeslot2.setTimeslotId(2L);
-        timeslot2.setStartTime(LocalTime.of(16, 0));
-        timeslot2.setEndTime(LocalTime.of(17, 0));
-
-        // Create a conflicting booking
-        Booking conflictingBooking = new Booking();
-        conflictingBooking.setBookingId(2L);
-        conflictingBooking.setCourt(testCourt);
-        conflictingBooking.setTimeslot(timeslot2);
-        conflictingBooking.setBookingDate(LocalDate.of(2025, 10, 15));
-
-        when(bookingDAO.findById(1L)).thenReturn(Optional.of(testBooking));
-        when(courtDAO.findById(1L)).thenReturn(Optional.of(testCourt));
-        when(timeslotDAO.findById(2L)).thenReturn(Optional.of(timeslot2));
-        when(bookingDAO.findByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(
-                eq(1L), eq(2L), any(LocalDate.class)))
-                .thenReturn(Arrays.asList(conflictingBooking));
+        when(bookingService.updateBooking(
+                anyLong(), anyLong(), anyLong(), any(LocalDate.class), anyLong()))
+                .thenThrow(new RuntimeException("The new time slot is already booked"));
 
         String slot = "1-2-2025-10-15";
 
@@ -242,7 +223,8 @@ class AdminControllerTest {
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingDAO, never()).save(any(Booking.class));
+        verify(bookingService, times(1)).updateBooking(
+                anyLong(), anyLong(), anyLong(), any(LocalDate.class), anyLong());
     }
 
     @Test
@@ -250,8 +232,7 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete booking successfully")
     void testDeleteBooking_Success() throws Exception {
-        when(bookingDAO.existsById(1L)).thenReturn(true);
-        doNothing().when(bookingDAO).deleteById(1L);
+        doNothing().when(bookingService).deleteBooking(1L);
 
         mockMvc.perform(post("/admin/delete/1")
                         .with(csrf()))
@@ -259,7 +240,7 @@ class AdminControllerTest {
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("success"));
 
-        verify(bookingDAO, times(1)).deleteById(1L);
+        verify(bookingService, times(1)).deleteBooking(1L);
     }
 
     @Test
@@ -267,7 +248,8 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should handle delete request for non-existent booking")
     void testDeleteBooking_NotFound() throws Exception {
-        when(bookingDAO.existsById(99999L)).thenReturn(false);
+        doThrow(new RuntimeException("Booking not found"))
+                .when(bookingService).deleteBooking(99999L);
 
         mockMvc.perform(post("/admin/delete/99999")
                         .with(csrf()))
@@ -275,7 +257,7 @@ class AdminControllerTest {
                 .andExpect(redirectedUrl("/admin"))
                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingDAO, never()).deleteById(anyLong());
+        verify(bookingService, times(1)).deleteBooking(99999L);
     }
 
     @Test
@@ -283,15 +265,14 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete booking via AJAX successfully")
     void testDeleteBookingAjax_Success() throws Exception {
-        when(bookingDAO.existsById(1L)).thenReturn(true);
-        doNothing().when(bookingDAO).deleteById(1L);
+        doNothing().when(bookingService).deleteBooking(1L);
 
         mockMvc.perform(delete("/admin/api/booking/1")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("SUCCESS"));
 
-        verify(bookingDAO, times(1)).deleteById(1L);
+        verify(bookingService, times(1)).deleteBooking(1L);
     }
 
     @Test
@@ -299,13 +280,14 @@ class AdminControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should handle AJAX delete for non-existent booking")
     void testDeleteBookingAjax_NotFound() throws Exception {
-        when(bookingDAO.existsById(99999L)).thenReturn(false);
+        doThrow(new RuntimeException("Booking not found"))
+                .when(bookingService).deleteBooking(99999L);
 
         mockMvc.perform(delete("/admin/api/booking/99999")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.startsWith("ERROR")));
 
-        verify(bookingDAO, never()).deleteById(anyLong());
+        verify(bookingService, times(1)).deleteBooking(99999L);
     }
 }
