@@ -83,7 +83,7 @@ public class BookingController {
                     
                     logger.info("Booking - Court: {}, Timeslot: {}, Date: {}", courtId, timeslotId, bookingDate);
                     
-                    // TODO: Replace hardcoded userId with actual authenticated user
+                     
                     savedBooking = bookingService.createBooking(courtId, timeslotId, bookingDate, getUser().getId());
                     successCount++;
                     
@@ -98,7 +98,7 @@ public class BookingController {
                 }
             }
             
-            // Giving user status of booking action
+            // GivinTODO: Replace hardcoded userId with actual authenticated userg user status of booking action
             if (successCount > 0 && failureCount == 0) {
                 redirectAttributes.addFlashAttribute("success", 
                     "Your booking has been confirmed successfully! Booked " + successCount + " slot(s).");
