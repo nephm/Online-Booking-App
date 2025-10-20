@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import com.uts.Online.Booking.App.DAO.PaymentDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Payment;
 import com.uts.Online.Booking.App.model.PaymentType;
 import com.uts.Online.Booking.App.model.Player;
@@ -38,19 +39,32 @@ public class PaymentController {
         this.bookingService = bookingService;
     }
 
+    //get logged in user
+    private User getUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userDAO.findByEmail(auth.getName()).orElse(null);
+    }
+
     //show payment form
     @GetMapping("")
     public String showPaymentForm(@RequestParam Long bookingId, @RequestParam Double amount, Model m) {
+
+        //get booking details
+        Booking booking = bookingService.getBookingById(bookingId);
+
+        if(booking == null){
+            m.addAttribute("error", "booking not found");
+            return "payment-failed";
+        }
+
+        m.addAttribute("booking", booking);
         m.addAttribute("bookingId", bookingId);
         m.addAttribute("amount", amount);
-        m.addAttribute("paymentTypes", PaymentType.values());
 
         //get current user's credit balance if required
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User u = userDAO.findByEmail(auth.getName()).orElse(null);
-
-        if(u instanceof Player){
-            m.addAttribute("creditBalance", ((Player) u).getCreditBalance());
+        
+        if(getUser() instanceof Player){
+            m.addAttribute("creditBalance", ((Player) getUser()).getCreditBalance());
         }
 
         return "payment";
@@ -70,13 +84,11 @@ public class PaymentController {
     @GetMapping("/myPayments")
     public String getPaymentHistory(Model m){
         
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User u = userDAO.findByEmail(auth.getName()).orElse(null);
-
-        if(u != null){
-            List<Payment> payments = paymentDAO.findByUserId(u.getId());
+       
+        if(getUser() != null){
+            List<Payment> payments = paymentDAO.findByUserId(getUser().getId());
             m.addAttribute("payments", payments);
-            m.addAttribute("user", u);
+            m.addAttribute("user", getUser());
             return "payment-history";
         }
 
@@ -85,51 +97,59 @@ public class PaymentController {
 
     //start payment and check what type of payment the user is doing
     @PostMapping("/process")
-    public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam PaymentType type, @RequestParam(required = false) String creditCardNumber,
+    public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam(defaultValue = "0") Double creditApplied, @RequestParam(required = false) String creditCardNumber,
                 @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User u = userDAO.findByEmail(auth.getName()).orElse(null);
         
-        if(u == null){
-            m.addAttribute("user", u);
+        if(getUser() == null){
+            m.addAttribute("user", getUser());
             return "payment/error";
         }
 
+        //calcute final amount after credit used
+        Double finalAmount = amount - creditApplied;
+
+        if(creditApplied > 0){
+            if(!(getUser() instanceof Player)){
+                m.addAttribute("error", "User is not a player");
+                return "payment_failed";
+            }
+
+            Player player = (Player) getUser();
+            if(player.getCreditBalance() < creditApplied){
+                m.addAttribute("error", "Insufficient credit available");
+                return "payment_failed";
+            }
+
+            //deduct credit from palyer's balance
+            player.setCreditBalance(player.getCreditBalance() - creditApplied);
+            userDAO.save(player);
+        }
+        
+        //handle credit card payment
         Payment payment = new Payment();
         payment.setBookingId(bookingId);
-        payment.setUserId(u.getId());
+        payment.setUserId(getUser().getId());
         payment.setAmount(amount);
         payment.setCreatedAt(LocalDateTime.now());
+        
+        payment.setPaymentType(PaymentType.CREDIT_CARD);
+        payment.setCreditCardNumber(creditCardNumber);
+        payment.setCreditCardExpiry(creditCardExpiry);
+        payment.setCreditCardSecurityCode(creditCardSecurityCode);
+        
 
-        if(type == PaymentType.CREDIT_CARD){
-            //handle credit card payment
-            payment.setPaymentType(PaymentType.CREDIT_CARD);
-            payment.setCreditCardNumber(creditCardNumber);
-            payment.setCreditCardExpiry(creditCardExpiry);
-            payment.setCreditCardSecurityCode(creditCardSecurityCode);
+        if(finalAmount <= 0){
             payment.setStatus("SUCCESS");
-        } else if (type == PaymentType.CREDIT_BALANCE){
-            if(u instanceof Player){
-                Player player = (Player) u;
-                if(player.getCreditBalance() >= amount){
-                    player.setCreditBalance(player.getCreditBalance() - amount);
-                    userDAO.save(player);
-                    payment.setPaymentType(PaymentType.CREDIT_BALANCE);
-                    payment.setStatus("SUCCESS");
-                } else{
-                    payment.setPaymentType(PaymentType.CREDIT_BALANCE);
-                    payment.setStatus("FAILED");
-                    m.addAttribute("error", "Insufficient credit available");
-                }
-            } else{
-                payment.setStatus("FAILED");
-                m.addAttribute("error", "User is not a player");
-            }
+        } else{
+            //this is where payment gateway integration would occur but for this application we will simulate scuccess
+            payment.setStatus("SUCCESS");
         }
 
         Payment saved_payment = paymentDAO.save(payment);
         m.addAttribute("payment", saved_payment);
+        m.addAttribute("creditUsed", creditApplied);
+        m.addAttribute("finalAmountPaid", finalAmount);
 
         if("SUCCESS".equals(saved_payment.getStatus())){
             bookingService.updateBookingStatus(bookingId, "CONFIRMED");

@@ -5,20 +5,34 @@
     <title>Booking Payment</title>
     <link th:href="@{/css/styles.css}" rel="stylesheet">
     <link th:href="@{/css/payment.css}" rel="stylesheet">
-    <script th:src="@{/js/script.js}" defer></script>
+    <script th:src="@{/js/payment.js}" defer></script>
 </head>
 <body>
     <form th:action="@{/payment/process}" method="post" class="payment-form">
         <h2>Payment Details</h2>
         <input type="hidden" name="bookingId" th:value="${bookingId}">
         <input type="hidden" name="amount" th:value="${amount}">
+        <input type="hidden" id="creditApplied" name="creditApplied" value="0">
 
-        <p>Total amount: $<span th:text="${amount}"></span></p>
+        <!-- booking details summary -->
+         <div class="booking-summary">
+            <h3>Booking Summary</h3>
+            <p><strong>Venue:</strong> <span th:text="${booking.court.venue.venueName}"></span></p>
+            <p><strong>Court:</strong> <span th:text="${booking.court.courtName}"></span></p>
+            <p><strong>Date:</strong> <span th:text="${booking.bookingDate}"></span></p>
+            <p><strong>Time:</strong> <span th:text="${booking.timeslot.startTime + ' - ' + booking.timeslot.endTime}"></span></p>
+            <p>Total amount: $<span th:text="${amount}"></span></p>
 
-        <select id="paymentType" name="type" required onchange="toggleFields()">
-            <option value="CREDIT_CARD">Credit Card</option>
-            <option value="CREDIT_BALANCE" th:if="${creditBalance != null}">Credit Balance ($<span th:text="${creditBalance}"></span>)</option>
-        </select>
+            <!-- Credit balance -->
+            <div class="credit-section" th:if="${creditBalance != null and creditBalance > 0}">
+                <p><strong>Available Credit:</strong>$<span id="availableCredit" th:text="${creditBalance}"></span></p>
+                <button type="button" class="btn btn-secondary" id="applyCreditBtn" onclick="applyCredit()">Apply Credit Balance</button>
+                <p id="creditAppliedMsg" style="color: green; display: none;"><strong>Credit Applied: </strong>-$<span id="creditAppliedAmount">0</span></p>
+            </div>
+
+            <hr>
+            <p class="total-amount"><strong>Total payment: </strong>$<span id="finalAmount" th:text="${amount}"></span></p>
+        </div>
 
         <div id="cardFields" class="card-info">
             <div class="input_container">
@@ -40,4 +54,49 @@
 
         <button type="submit" class="btn btn-primary">Pay Now</button>
     </form>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const amount = /*[[${amount}]]*/ 0;
+        const availableCredit = /*[[${creditBalance != null ? creditBalance : 0}]]*/ 0;
+        let creditApplied = 0;
+        let creditUsed = false;
+
+        function applyCredit(){
+            if(creditUsed){
+                alert("Credit already applied.");
+                return;
+            }
+
+            if(availableCredit <= 0){
+                alert("No available credit to apply.");
+                return;
+            }
+
+            //calculate how much credit to apply
+            creditApplied = Math.min(availableCredit, amount);
+            const finalAmount = amount - creditApplied;
+
+            //update display
+            document.getElementById("finalAmount").textContent = finalAmount.toFixed(2);
+            document.getElementById("creditAppliedAmount").textContent = creditApplied.toFixed(2);
+            document.getElementById("creditAppliedMsg").style.display = "block";
+            document.getElementById("creditApplied").value = creditApplied;
+
+            // Update available credit display
+            const remainingCredit = availableCredit - creditApplied;
+            document.getElementById("availableCredit").textContent = remainingCredit.toFixed(2);
+
+            //disable button
+            const btn = document.getElementById("applyCreditBtn");
+            btn.disabled = true;
+            btn.textContent = "Credit Applied";
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+
+            creditUsed = true;
+
+        }
+        /*]]>*/
+    </script>
 </body>
