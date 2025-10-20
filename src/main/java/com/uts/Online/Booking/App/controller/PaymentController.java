@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
-import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.PaymentDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.model.Booking;
@@ -31,13 +30,11 @@ import org.springframework.ui.Model;
 public class PaymentController {
     
     private final PaymentDAO paymentDAO;
-    private final BookingDAO bookingDAO;
     private final UserDAO userDAO;
     private final BookingService bookingService;
 
-    public PaymentController (PaymentDAO paymentDAO, BookingDAO bookingDAO, CustomerDetailsService userService, UserDAO userDAO, BookingService bookingService){
+    public PaymentController (PaymentDAO paymentDAO, CustomerDetailsService userService, UserDAO userDAO, BookingService bookingService){
         this.paymentDAO = paymentDAO;
-        this.bookingDAO = bookingDAO;
         this.userDAO = userDAO;
         this.bookingService = bookingService;
     }
@@ -53,7 +50,7 @@ public class PaymentController {
     public String showPaymentForm(@RequestParam Long bookingId, @RequestParam Double amount, Model m) {
 
         //get booking details
-        Booking booking = bookingDAO.findById(bookingId).orElse(null);
+        Booking booking = bookingService.getBookingById(bookingId);
 
         if(booking == null){
             m.addAttribute("error", "booking not found");
