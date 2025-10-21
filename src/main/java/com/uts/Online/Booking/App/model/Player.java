@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name ="players", schema ="dbo")
+@PrimaryKeyJoinColumn(name = "userId")
 public class Player extends User {
 
     @Column(name="payment_id")

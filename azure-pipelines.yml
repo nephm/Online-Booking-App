@@ -1,6 +1,5 @@
 trigger:
-- main
-- plswork
+- emailNOTWORKING
 
 pool:
   vmImage: ubuntu-latest

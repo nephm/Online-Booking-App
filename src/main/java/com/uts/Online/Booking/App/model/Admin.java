@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name ="admins", schema ="dbo")
+@PrimaryKeyJoinColumn(name = "userId")
 public class Admin extends User{
 
     public Admin(){ super(); }
