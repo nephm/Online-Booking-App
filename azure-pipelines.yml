@@ -1,6 +1,6 @@
 trigger:
+- new-test-courtcontroller
 - main
-- plswork
 
 pool:
   vmImage: ubuntu-latest

@@ -1,212 +1,166 @@
-// package com.uts.Online.Booking.App;
+package com.uts.Online.Booking.App;
 
-// import com.uts.Online.Booking.App.DAO.BookingDAO;
-// import com.uts.Online.Booking.App.DAO.CourtDAO;
-// import com.uts.Online.Booking.App.DAO.TimeslotDAO;
-// import com.uts.Online.Booking.App.DAO.VenueDAO;
-// import com.uts.Online.Booking.App.model.Booking;
-// import com.uts.Online.Booking.App.model.Court;
-// import com.uts.Online.Booking.App.model.Timeslot;
-// import com.uts.Online.Booking.App.model.Venue;
-// import org.junit.jupiter.api.*;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.test.context.ActiveProfiles;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.transaction.annotation.Transactional;
+import com.uts.Online.Booking.App.DAO.CourtDAO;
+import com.uts.Online.Booking.App.DAO.TimeslotDAO;
+import com.uts.Online.Booking.App.DAO.VenueDAO;
+import com.uts.Online.Booking.App.config.SecurityConfig;
+import com.uts.Online.Booking.App.controller.CourtController;
+import com.uts.Online.Booking.App.model.*;
+import com.uts.Online.Booking.App.service.BookingService;
 
-// import java.time.LocalDate;
-// import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 
-// @SpringBootTest
-// @ActiveProfiles("test")
-// @AutoConfigureMockMvc(addFilters = false)@Transactional
-// @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-// @DisplayName("Court Controller Integration Tests")
-// class CourtControllerTest {
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//     @Autowired
-//     private MockMvc mockMvc;
+@WebMvcTest(CourtController.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DisplayName("CourtController Test")
+public class CourtControllerTest {
 
-//     @Autowired
-//     private VenueDAO venueDAO;
+    @Autowired
+    private MockMvc mockMvc;
 
-//     @Autowired
-//     private CourtDAO courtDAO;
+    @MockBean
+    private CourtDAO courtDAO;
 
-//     @Autowired
-//     private TimeslotDAO timeslotDAO;
+    @MockBean
+    private VenueDAO venueDAO;
 
-//     @Autowired
-//     private BookingDAO bookingDAO;
+    @MockBean
+    private TimeslotDAO timeslotDAO;
 
-//     private Venue testVenue;
-//     private Court testCourt;
-//     private Timeslot testTimeslot;
+    @MockBean
+    private BookingService bookingService;
 
-//     @BeforeEach
-//     void setUp() {
-//         testVenue = new Venue();
-//         testVenue.setVenueName("Test Venue");
-//         testVenue.setAddress("123 Test St");
-//         testVenue = venueDAO.save(testVenue);
+    private Venue testVenue;
+    private Court testCourt;
+    private Timeslot testTimeslot;
 
-//         testCourt = new Court();
-//         testCourt.setCourtName("Test Court");
-//         testCourt.setCourtType("Indoor");
-//         testCourt.setLocation("Building A");
-//         testCourt.setHourlyRate(50.0);
-//         testCourt.setVenue(testVenue);
-//         testCourt = courtDAO.save(testCourt);
+    @BeforeEach
+    public void setUp() {
+        testVenue = new Venue();
+        testVenue.setVenueId(1L);
+        testVenue.setVenueName("UTS Badminton Hall");
+        testVenue.setAddress("15 Broadway, Ultimo");
 
-//         testTimeslot = new Timeslot();
-//         testTimeslot.setStartTime(LocalTime.of(14, 0));
-//         testTimeslot.setEndTime(LocalTime.of(15, 0));
-//         testTimeslot = timeslotDAO.save(testTimeslot);
-//     }
+        testCourt = new Court();
+        testCourt.setCourtId(101L);
+        testCourt.setCourtName("Court A");
+        testCourt.setCourtType("Indoor");
+        testCourt.setHourlyRate(25.0);
+        testCourt.setVenue(testVenue);
 
-//     @Test
-//     @Order(1)
-//     @DisplayName("Should display venue courts page with today's date")
-//     void testShowVenueCourts_DefaultDate() throws Exception {
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(view().name("court"))
-//                 .andExpect(model().attributeExists("venue"))
-//                 .andExpect(model().attributeExists("courts"))
-//                 .andExpect(model().attributeExists("timeSlots"))
-//                 .andExpect(model().attributeExists("availability"))
-//                 .andExpect(model().attribute("editMode", false));
-//     }
+        testTimeslot = new Timeslot();
+        testTimeslot.setTimeslotId(201L);
+        testTimeslot.setStartTime(LocalTime.of(9, 0));
+        testTimeslot.setEndTime(LocalTime.of(10, 0));
+    }
 
-//     @Test
-//     @Order(2)
-//     @DisplayName("Should display venue courts page with specific date")
-//     void testShowVenueCourts_SpecificDate() throws Exception {
-//         String date = "2025-10-15";
+    @Test
+    @Order(1)
+    @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
+    @DisplayName("Should display courts when venue exists")
+    public void testShowVenueCourts_Success() throws Exception {
+        when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
+        when(courtDAO.findByVenueVenueId(1L)).thenReturn(List.of(testCourt));
+        when(timeslotDAO.findAll()).thenReturn(List.of(testTimeslot));
+        when(bookingService.getAvailabilityMap(anyLong(), any(LocalDate.class), anyList(), anyList()))
+                .thenReturn(Map.of("101-201", true));
 
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts")
-//                         .param("date", date))
-//                 .andExpect(status().isOk())
-//                 .andExpect(view().name("court"))
-//                 .andExpect(model().attributeExists("selectedDate"))
-//                 .andExpect(model().attribute("selectedDate", LocalDate.parse(date)));
-//     }
+        mockMvc.perform(get("/venue/1/courts"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("court"))
+                .andExpect(model().attributeExists("venue", "courts", "timeSlots", "availability"))
+                .andExpect(model().attribute("venue", testVenue));
 
-//     @Test
-//     @Order(3)
-//     @DisplayName("Should handle invalid venue ID")
-//     void testShowVenueCourts_InvalidVenueId() throws Exception {
-//         mockMvc.perform(get("/venue/99999/courts"))
-//                 .andExpect(status().is3xxRedirection())
-//                 .andExpect(redirectedUrl("/venues"));
-//     }
+        verify(venueDAO, times(1)).findById(1L);
+        verify(bookingService, times(1)).getAvailabilityMap(anyLong(), any(LocalDate.class), anyList(), anyList());
+    }
 
-//     @Test
-//     @Order(4)
-//     @DisplayName("Should show availability map with booked slots")
-//     void testShowVenueCourts_WithBookedSlots() throws Exception {
-//         // Create a booking
-//         Booking booking = new Booking();
-//         booking.setCourt(testCourt);
-//         booking.setTimeslot(testTimeslot);
-//         booking.setBookingDate(LocalDate.now().plusDays(1));
-//         booking.setUserId(1L);
-//         booking.setStatus("CONFIRMED");
-//         bookingDAO.save(booking);
+    @Test
+    @Order(2)
+    @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
+    @DisplayName("Should redirect when venue not found")
+    public void testShowVenueCourts_VenueNotFound() throws Exception {
+        when(venueDAO.findById(999L)).thenReturn(Optional.empty());
 
-//         String date = LocalDate.now().plusDays(1).toString();
+        mockMvc.perform(get("/venue/999/courts"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/venues"));
 
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts")
-//                         .param("date", date))
-//                 .andExpect(status().isOk())
-//                 .andExpect(model().attributeExists("availability"));
-//     }
+        verify(venueDAO, times(1)).findById(999L);
+    }
 
-//     @Test
-//     @Order(5)
-//     @DisplayName("Should enter edit mode with correct parameters")
-//     void testShowVenueCourts_EditMode() throws Exception {
-//         // Create a booking to edit
-//         Booking booking = new Booking();
-//         booking.setCourt(testCourt);
-//         booking.setTimeslot(testTimeslot);
-//         booking.setBookingDate(LocalDate.of(2025, 10, 20));
-//         booking.setUserId(1L);
-//         booking.setStatus("CONFIRMED");
-//         booking = bookingDAO.save(booking);
+    @Test
+    @Order(3)
+    @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
+    @DisplayName("Should redirect when no courts found for venue")
+    public void testShowVenueCourts_NoCourtsFound() throws Exception {
+        when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
+        when(courtDAO.findByVenueVenueId(1L)).thenReturn(Collections.emptyList());
 
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts")
-//                         .param("date", "2025-10-20")
-//                         .param("editBookingId", booking.getBookingId().toString())
-//                         .param("originalCourtId", testCourt.getCourtId().toString())
-//                         .param("originalTimeslotId", testTimeslot.getTimeslotId().toString())
-//                         .param("originalUserId", "1"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(view().name("court"))
-//                 .andExpect(model().attribute("editMode", true))
-//                 .andExpect(model().attributeExists("editBookingId"))
-//                 .andExpect(model().attributeExists("preSelectedSlot"))
-//                 .andExpect(model().attributeExists("originalDate"));
-//     }
+        mockMvc.perform(get("/venue/1/courts"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/venues"));
 
-//     @Test
-//     @Order(8)
-//     @DisplayName("Should redirect when edit booking not found")
-//     void testShowVenueCourts_EditModeBookingNotFound() throws Exception {
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts")
-//                         .param("editBookingId", "99999")
-//                         .param("originalCourtId", "1")
-//                         .param("originalTimeslotId", "1")
-//                         .param("originalUserId", "1"))
-//                 .andExpect(status().is3xxRedirection())
-//                 .andExpect(redirectedUrl("/admin"))
-//                 .andExpect(flash().attributeExists("error"));
-//     }
+        verify(courtDAO, times(1)).findByVenueVenueId(1L);
+    }
 
-//     @Test
-//     @Order(9)
-//     @DisplayName("Should generate available dates list")
-//     void testShowVenueCourts_AvailableDates() throws Exception {
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(model().attributeExists("availableDates"));
-//     }
+    @Test
+    @Order(4)
+    @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
+    @DisplayName("Should redirect when no timeslots found")
+    public void testShowVenueCourts_NoTimeslotsFound() throws Exception {
+        when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
+        when(courtDAO.findByVenueVenueId(1L)).thenReturn(List.of(testCourt));
+        when(timeslotDAO.findAll()).thenReturn(Collections.emptyList());
 
-//     @Test
-//     @Order(10)
-//     @DisplayName("Should set correct submit action for normal mode")
-//     void testShowVenueCourts_NormalModeSubmitAction() throws Exception {
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(model().attribute("submitAction", "/book"))
-//                 .andExpect(model().attribute("submitButtonText", "Proceed to Book"));
-//     }
+        mockMvc.perform(get("/venue/1/courts"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/venues"));
 
-//     @Test
-//     @Order(11)
-//     @DisplayName("Should set correct submit action for edit mode")
-//     void testShowVenueCourts_EditModeSubmitAction() throws Exception {
-//         // Create a booking to edit
-//         Booking booking = new Booking();
-//         booking.setCourt(testCourt);
-//         booking.setTimeslot(testTimeslot);
-//         booking.setBookingDate(LocalDate.now().plusDays(1));
-//         booking.setUserId(1L);
-//         booking.setStatus("CONFIRMED");
-//         booking = bookingDAO.save(booking);
+        verify(timeslotDAO, times(1)).findAll();
+    }
 
-//         mockMvc.perform(get("/venue/" + testVenue.getVenueId() + "/courts")
-//                         .param("editBookingId", booking.getBookingId().toString())
-//                         .param("originalCourtId", testCourt.getCourtId().toString())
-//                         .param("originalTimeslotId", testTimeslot.getTimeslotId().toString())
-//                         .param("originalUserId", "1"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(model().attribute("submitAction", "/admin/update-booking"))
-//                 .andExpect(model().attribute("submitButtonText", "Update Booking"));
-//     }
-// }
+    @Test
+    @Order(5)
+    @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
+    @DisplayName("Should handle invalid date input gracefully")
+    public void testShowVenueCourts_InvalidDate() throws Exception {
+        when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
+        when(courtDAO.findByVenueVenueId(1L)).thenReturn(List.of(testCourt));
+        when(timeslotDAO.findAll()).thenReturn(List.of(testTimeslot));
+        when(bookingService.getAvailabilityMap(anyLong(), any(LocalDate.class), anyList(), anyList()))
+                .thenReturn(Map.of("101-201", true));
+
+        mockMvc.perform(get("/venue/1/courts").param("date", "invalid-date"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("court"))
+                .andExpect(model().attributeExists("venue", "courts", "timeSlots", "availability"))
+                .andExpect(model().attribute("venue", testVenue));
+
+        verify(bookingService, times(1)).getAvailabilityMap(anyLong(), any(LocalDate.class), anyList(), anyList());
+    }
+}
