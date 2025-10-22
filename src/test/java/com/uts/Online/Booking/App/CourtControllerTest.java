@@ -7,59 +7,55 @@ import com.uts.Online.Booking.App.config.SecurityConfig;
 import com.uts.Online.Booking.App.controller.CourtController;
 import com.uts.Online.Booking.App.model.*;
 import com.uts.Online.Booking.App.service.BookingService;
+import com.uts.Online.Booking.App.service.CustomerDetailsService;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CourtController.class)
+@Import(SecurityConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("CourtController Test")
+@DisplayName("CourtController Tests")
 public class CourtControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private CourtDAO courtDAO;
 
-    @MockBean
+    @MockitoBean
     private VenueDAO venueDAO;
 
-    @MockBean
+    @MockitoBean
     private TimeslotDAO timeslotDAO;
 
-    @MockBean
+    @MockitoBean
     private BookingService bookingService;
+
+    @MockitoBean
+    private CustomerDetailsService customerDetailsService;
 
     private Venue testVenue;
     private Court testCourt;
     private Timeslot testTimeslot;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testVenue = new Venue();
         testVenue.setVenueId(1L);
         testVenue.setVenueName("UTS Badminton Hall");
@@ -82,7 +78,7 @@ public class CourtControllerTest {
     @Order(1)
     @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
     @DisplayName("Should display courts when venue exists")
-    public void testShowVenueCourts_Success() throws Exception {
+    void testShowVenueCourts_Success() throws Exception {
         when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
         when(courtDAO.findByVenueVenueId(1L)).thenReturn(List.of(testCourt));
         when(timeslotDAO.findAll()).thenReturn(List.of(testTimeslot));
@@ -103,7 +99,7 @@ public class CourtControllerTest {
     @Order(2)
     @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
     @DisplayName("Should redirect when venue not found")
-    public void testShowVenueCourts_VenueNotFound() throws Exception {
+    void testShowVenueCourts_VenueNotFound() throws Exception {
         when(venueDAO.findById(999L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/venue/999/courts"))
@@ -117,7 +113,7 @@ public class CourtControllerTest {
     @Order(3)
     @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
     @DisplayName("Should redirect when no courts found for venue")
-    public void testShowVenueCourts_NoCourtsFound() throws Exception {
+    void testShowVenueCourts_NoCourtsFound() throws Exception {
         when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
         when(courtDAO.findByVenueVenueId(1L)).thenReturn(Collections.emptyList());
 
@@ -132,7 +128,7 @@ public class CourtControllerTest {
     @Order(4)
     @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
     @DisplayName("Should redirect when no timeslots found")
-    public void testShowVenueCourts_NoTimeslotsFound() throws Exception {
+    void testShowVenueCourts_NoTimeslotsFound() throws Exception {
         when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
         when(courtDAO.findByVenueVenueId(1L)).thenReturn(List.of(testCourt));
         when(timeslotDAO.findAll()).thenReturn(Collections.emptyList());
@@ -148,7 +144,7 @@ public class CourtControllerTest {
     @Order(5)
     @WithMockUser(username = "player1@example.com", roles = {"PLAYER"})
     @DisplayName("Should handle invalid date input gracefully")
-    public void testShowVenueCourts_InvalidDate() throws Exception {
+    void testShowVenueCourts_InvalidDate() throws Exception {
         when(venueDAO.findById(1L)).thenReturn(Optional.of(testVenue));
         when(courtDAO.findByVenueVenueId(1L)).thenReturn(List.of(testCourt));
         when(timeslotDAO.findAll()).thenReturn(List.of(testTimeslot));
