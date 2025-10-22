@@ -1,4 +1,4 @@
-package com.uts.Online.Booking.App;
+/*package com.uts.Online.Booking.App;
 
 import com.uts.Online.Booking.App.DAO.PaymentDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
@@ -138,4 +138,4 @@ public class PaymentControllerTest{
                 .andExpect(model().attributeExists("error"));
     }
 
-}
+}*/

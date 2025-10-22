@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+//import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -101,6 +102,14 @@ public class PaymentController {
         return "redirect:/login";
     }
 
+    private void confirmationEmail(String to, String subject, String text){
+        SimpleMailMessage message = new SimpleMailMessage();
+         message.setTo(to);
+         message.setSubject(subject);
+         message.setText(text);
+         mailSender.send(message);
+    }
+
     //start payment and check what type of payment the user is doing
     @PostMapping("/process")
     public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam(defaultValue = "0") Double creditApplied, @RequestParam(required = false) String creditCardNumber,
@@ -163,17 +172,18 @@ public class PaymentController {
             try {
                 User u = getUser();
 
-                // Build simple confirmation email
-                org.springframework.mail.SimpleMailMessage message = new org.springframework.mail.SimpleMailMessage();
-                message.setTo(u.getEmail());
-                message.setSubject("Booking Confirmation");
-                message.setText("Thank you for booking with CourtBooker! Your booking has been confirmed.");
+                if (u == null || u.getEmail() == null || u.getEmail().isBlank()) {
+                    System.out.println("No user/email available to send test email for booking " + bookingId);
+                } else {
+                    String subject = "Booking Confirmation - CourtBooker";
+                    String text = "Thank you for your booking! This is a confirmation that your booking has been received successfully.";
 
-                mailSender.send(message);
+                    confirmationEmail(u.getEmail(), subject, text);
 
-                System.out.println("Confirmation email sent directly to " + u.getEmail());
+                    System.out.println("Test confirmation email sent to " + u.getEmail());
+                }
             } catch (Exception e) {
-                System.out.println("Failed to send confirmation email: " + e.getMessage());
+                System.out.println("Failed to send test email: " + e.getMessage());
                 e.printStackTrace();
             }
 

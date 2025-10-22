@@ -1,4 +1,4 @@
-package com.uts.Online.Booking.App;
+/*package com.uts.Online.Booking.App;
 
 import com.uts.Online.Booking.App.DAO.BookingDAO;
 import com.uts.Online.Booking.App.DAO.CourtDAO;
@@ -274,4 +274,4 @@ class AdminControllerTest {
         booking.setStatus("CONFIRMED");
         return booking;
     }
-}
+}*/

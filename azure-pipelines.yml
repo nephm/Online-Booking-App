@@ -1,6 +1,3 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-
 trigger:
 - emailNOTWORKING
 
@@ -28,7 +25,6 @@ steps:
 # Run integration tests
 - task: Maven@4
   displayName: 'Run Integration Tests'
-
   inputs:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
@@ -41,7 +37,7 @@ steps:
     options: '-e -Dspring.profiles.active=test'
   continueOnError: true
 
-# Package the application without running tests (already ran above)
+# Package the application
 - task: Maven@4
   displayName: 'Maven package'
   inputs:
@@ -53,7 +49,7 @@ steps:
     goals: 'package'
     options: '-e -DskipTests'
 
-# Publish test results (always runs even if tests fail)
+# Publish test results
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
   inputs:
@@ -64,11 +60,31 @@ steps:
     mergeTestResults: true
   condition: always()
 
-# Publish the JAR file (only if tests pass)
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish JAR'
+# Copy JAR to staging directory
+- task: CopyFiles@2
+  displayName: 'Copy JAR to staging'
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/target/Online-Booking-App-0.0.1-SNAPSHOT.jar'
-    ArtifactName: 'badminton-booking-app'
+    SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+    Contents: '*.jar'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  condition: succeeded()
+
+# Publish artifact
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
     publishLocation: 'Container'
+  condition: succeeded()
+
+# Deploy to Azure Web App (Windows)
+- task: AzureWebApp@1
+  displayName: 'Deploy to Azure Web App'
+  inputs:
+    azureSubscription: 'ASD Deployment'
+    appType: 'webApp'
+    appName: 'BadmintonBooking'
+    package: '$(Build.ArtifactStagingDirectory)/*.jar'
+    deploymentMethod: 'zipDeploy'
   condition: succeeded()
