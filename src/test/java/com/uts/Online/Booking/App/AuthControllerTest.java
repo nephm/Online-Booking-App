@@ -60,6 +60,7 @@ public class AuthControllerTest {
 
     @MockitoBean
     private JavaMailSender mailSender;
+    
 
     @BeforeEach
     void setUp() {

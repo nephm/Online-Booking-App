@@ -22,6 +22,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -43,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PaymentController.class)
 @Import(SecurityConfig.class)
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("PaymentController Test")
 public class PaymentControllerTest{
 
@@ -61,6 +62,9 @@ public class PaymentControllerTest{
 
     @MockitoBean
     private CustomerDetailsService uService;
+
+    @MockitoBean
+    private JavaMailSender mailSender;
 
     private Player testPlayer;
     private Payment testPayment;
