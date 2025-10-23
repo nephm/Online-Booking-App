@@ -1,19 +1,22 @@
 package com.uts.Online.Booking.App;
 
 import com.uts.Online.Booking.App.DAO.BookingDAO;
+import com.uts.Online.Booking.App.DAO.CourtDAO;
+import com.uts.Online.Booking.App.DAO.TimeslotDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.DAO.VenueDAO;
 import com.uts.Online.Booking.App.config.SecurityConfig;
 import com.uts.Online.Booking.App.controller.BookingController;
 import com.uts.Online.Booking.App.model.*;
 import com.uts.Online.Booking.App.service.BookingService;
 import com.uts.Online.Booking.App.service.CustomerDetailsService;
+import com.uts.Online.Booking.App.service.UserService;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,10 +48,22 @@ class BookingControllerTest {
     private BookingDAO bookingDAO;
 
     @MockitoBean
+    private CourtDAO courtDAO;
+
+    @MockitoBean
+    private TimeslotDAO timeslotDAO;
+
+    @MockitoBean
+    private VenueDAO venueDAO;
+
+    @MockitoBean
     private UserDAO userDAO;
 
     @MockitoBean
     private CustomerDetailsService customerDetailsService;
+
+    @MockitoBean
+    private UserService userService;
 
     private User testUser;
     private Player testPlayer;
