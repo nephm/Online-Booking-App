@@ -97,8 +97,7 @@ public class BookingController {
                     errorMessages.append(e.getMessage()).append("; ");
                 }
             }
-            
-            // GivinTODO: Replace hardcoded userId with actual authenticated userg user status of booking action
+
             if (successCount > 0 && failureCount == 0) {
                 redirectAttributes.addFlashAttribute("success", 
                     "Your booking has been confirmed successfully! Booked " + successCount + " slot(s).");
@@ -257,5 +256,4 @@ public class BookingController {
 
         return "redirect:/myBookings";
     }
-    
 }
