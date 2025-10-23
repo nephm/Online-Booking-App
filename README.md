@@ -1,23 +1,3 @@
 # Online-Booking-App
-
-Booking
-View Future book
-view past booking
-Time/DATE Cost Location Court number
-rates
-membership
-account details
-credit
-
-cancelation
-
-
-User session storage
-user validation
-payment saving
-
-offers discounts promotions
-
-shop
-
-Test webhook again aaa
+Badminton booking website hosted on Azure Web App using SQL Server and Java Spring Boot
+https://badmintonbooking-d5htaba7b0d0b5bc.australiaeast-01.azurewebsites.net
