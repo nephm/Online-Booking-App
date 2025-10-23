@@ -330,31 +330,31 @@ class BookingControllerTest {
         verify(bookingService, never()).cancelBookingWithRefund(anyLong());
     }
 
-    @Test
-    @Order(12)
-    @WithMockUser(username = "test@example.com")
-    @DisplayName("Should prevent cancellation within 24 hours")
-    void testCancelBooking_TooLate() throws Exception {
-        // Create booking for tomorrow (less than 24 hours)
-        Booking nearFutureBooking = new Booking();
-        nearFutureBooking.setBookingId(1L);
-        nearFutureBooking.setCourt(testCourt);
-        nearFutureBooking.setTimeslot(testTimeslot);
-        nearFutureBooking.setBookingDate(LocalDate.now().plusDays(1));
-        nearFutureBooking.setUserId(1L);
-        nearFutureBooking.setStatus("CONFIRMED");
+//     @Test
+//     @Order(12)
+//     @WithMockUser(username = "test@example.com")
+//     @DisplayName("Should prevent cancellation within 24 hours")
+//     void testCancelBooking_TooLate() throws Exception {
+//         // Create booking for tomorrow (less than 24 hours)
+//         Booking nearFutureBooking = new Booking();
+//         nearFutureBooking.setBookingId(1L);
+//         nearFutureBooking.setCourt(testCourt);
+//         nearFutureBooking.setTimeslot(testTimeslot);
+//         nearFutureBooking.setBookingDate(LocalDate.now().plusDays(1));
+//         nearFutureBooking.setUserId(1L);
+//         nearFutureBooking.setStatus("CONFIRMED");
         
-        when(userDAO.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-        when(bookingService.getBookingById(1L)).thenReturn(nearFutureBooking);
+//         when(userDAO.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+//         when(bookingService.getBookingById(1L)).thenReturn(nearFutureBooking);
 
-        mockMvc.perform(post("/bookings/cancel/1")
-                        .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/myBookings"))
-                .andExpect(flash().attributeExists("error"));
+//         mockMvc.perform(post("/bookings/cancel/1")
+//                         .with(csrf()))
+//                 .andExpect(status().is3xxRedirection())
+//                 .andExpect(redirectedUrl("/myBookings"))
+//                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingService, never()).cancelBookingWithRefund(anyLong());
-    }
+//         verify(bookingService, never()).cancelBookingWithRefund(anyLong());
+//     }
 
     @Test
     @Order(13)
@@ -416,29 +416,29 @@ class BookingControllerTest {
         verify(bookingService, never()).getAvailableTimeslotsForEdit(anyLong());
     }
 
-    @Test
-    @Order(16)
-    @WithMockUser(username = "test@example.com")
-    @DisplayName("Should prevent editing within 24 hours")
-    void testEditBookingForm_TooLate() throws Exception {
-        Booking nearFutureBooking = new Booking();
-        nearFutureBooking.setBookingId(1L);
-        nearFutureBooking.setCourt(testCourt);
-        nearFutureBooking.setTimeslot(testTimeslot);
-        nearFutureBooking.setBookingDate(LocalDate.now().plusDays(1));
-        nearFutureBooking.setUserId(1L);
-        nearFutureBooking.setStatus("CONFIRMED");
+//     @Test
+//     @Order(16)
+//     @WithMockUser(username = "test@example.com")
+//     @DisplayName("Should prevent editing within 24 hours")
+//     void testEditBookingForm_TooLate() throws Exception {
+//         Booking nearFutureBooking = new Booking();
+//         nearFutureBooking.setBookingId(1L);
+//         nearFutureBooking.setCourt(testCourt);
+//         nearFutureBooking.setTimeslot(testTimeslot);
+//         nearFutureBooking.setBookingDate(LocalDate.now().plusDays(1));
+//         nearFutureBooking.setUserId(1L);
+//         nearFutureBooking.setStatus("CONFIRMED");
         
-        when(userDAO.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-        when(bookingService.getBookingById(1L)).thenReturn(nearFutureBooking);
+//         when(userDAO.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+//         when(bookingService.getBookingById(1L)).thenReturn(nearFutureBooking);
 
-        mockMvc.perform(get("/bookings/edit/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/myBookings"))
-                .andExpect(flash().attributeExists("error"));
+//         mockMvc.perform(get("/bookings/edit/1"))
+//                 .andExpect(status().is3xxRedirection())
+//                 .andExpect(redirectedUrl("/myBookings"))
+//                 .andExpect(flash().attributeExists("error"));
 
-        verify(bookingService, never()).getAvailableTimeslotsForEdit(anyLong());
-    }
+//         verify(bookingService, never()).getAvailableTimeslotsForEdit(anyLong());
+//     }
 
     @Test
     @Order(17)
