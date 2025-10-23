@@ -6,7 +6,6 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "Timeslots")
 public class Timeslot {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long timeslotId;

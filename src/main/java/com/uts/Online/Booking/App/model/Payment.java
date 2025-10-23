@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="payments", schema="dbo")
 public class Payment {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="payment_id")

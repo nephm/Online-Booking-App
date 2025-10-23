@@ -22,7 +22,7 @@ public class PlayerController {
         this.playerService = playerService;
         this.userDAO = userDAO;
     }
-    
+
     @GetMapping("/credit")
     public String showBalance(Model m) {
         //retrieve the current user's email
@@ -41,5 +41,4 @@ public class PlayerController {
         m.addAttribute("balance", balance);
         return "credit";
     }
-    
 }

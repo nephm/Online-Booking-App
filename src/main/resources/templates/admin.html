@@ -15,7 +15,7 @@
                 <div class="nav-links">
                     <a th:href="@{/venues}" class="nav-link">Venues</a>
                     <a th:href="@{/admin}" class="nav-link">Admin</a>
-                    <a th:href="@{/}" class="nav-link">Home</a>
+                    <a th:href="@{/main}" class="nav-link">Home</a>
                 </div>
             </nav>
         </header>
@@ -40,7 +40,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                
+
                 <tbody>
                     <tr th:each="booking : ${bookings}" th:if="${bookings != null}">
                         <td th:text="${booking.bookingId}">1</td>
@@ -60,7 +60,7 @@
                             </div>
                         </td>
                     </tr>
-                    
+
                     <tr th:if="${bookings == null or bookings.isEmpty()}">
                         <td colspan="7" style="text-align: center; padding: 2rem; color: #94a3b8;">
                             No bookings found

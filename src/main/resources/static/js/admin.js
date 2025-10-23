@@ -21,11 +21,11 @@ document.getElementById('confirmDelete').addEventListener('click', function() {
             csrfInput.value = csrfToken.getAttribute('content');
             form.appendChild(csrfInput);
         }
-        
+
         document.body.appendChild(form);
         form.submit();
     }
-    
+
     document.getElementById('deleteModal').style.display = 'none';
     bookingToDelete = null;
 });

@@ -13,7 +13,7 @@ public class PlayerService {
     PlayerService(PlayerDAO playerDAO) {
         this.playerDAO = playerDAO;
     }
-    
+
     public double getCreditBalance(String email){
         //get player by email
         Player player = playerDAO.findByEmail(email);
@@ -23,6 +23,5 @@ public class PlayerService {
         } else{
             return 0.0;
         }
-
     }
 }

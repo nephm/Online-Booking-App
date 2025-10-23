@@ -10,5 +10,4 @@ public interface PlayerDAO extends JpaRepository<Player, Long> {
     boolean existsById(@NonNull Long Id);
 
     Player findByEmail(String email);
-    
 }

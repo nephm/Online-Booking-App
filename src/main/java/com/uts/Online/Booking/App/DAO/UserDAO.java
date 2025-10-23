@@ -10,6 +10,5 @@ import java.util.Optional;
 public interface UserDAO extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     User findByActivationToken(String Token);
-    
 }
 
