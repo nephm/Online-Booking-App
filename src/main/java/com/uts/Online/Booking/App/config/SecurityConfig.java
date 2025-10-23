@@ -24,9 +24,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
                     .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/", "/index", "/login", "/register", "/registration_email", "/activate", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                    //Public routes - requires no authentication
+                    .requestMatchers("/", "/index", "/login", "/register", "/registration_email", "/activate", "/activation_status", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                    // Admin only routes
                     .requestMatchers("/admin/**", "/roles/**", "/dashboard/**").hasRole("ADMIN")
+                    // Authenticated user routes
                     .requestMatchers("/bookings/**").authenticated()
+
+                    // Any other requests require authentication
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -42,7 +47,7 @@ public class SecurityConfig {
                     .permitAll()
                 )
                 .logout(logout -> logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                     .logoutSuccessUrl("/")
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID", "BADMINSESSION")

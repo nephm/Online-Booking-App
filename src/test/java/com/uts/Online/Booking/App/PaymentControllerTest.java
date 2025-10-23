@@ -160,7 +160,7 @@ public class PaymentControllerTest{
     @Order(3)
     @WithMockUser(username = "player@example.com")
     @DisplayName("Should process payment partially by credit")
-    public void testCreditCardPaymentWithCredit_Success() throws Exception{
+    public void testCreditCardPaymentWithPartialCredit_Success() throws Exception{
 
         testPlayer.setCreditBalance(15.0);
 
@@ -221,7 +221,7 @@ public class PaymentControllerTest{
     @Order(5)
     @WithMockUser(username = "player@example.com")
     @DisplayName("Should process payment fully covered by credit")
-    public void testFullCreditCardPaymentWithCredit_Success() throws Exception{
+    public void testCreditCardPaymentWithFullCredit_Success() throws Exception{
 
         testPlayer.setCreditBalance(35.0);
 

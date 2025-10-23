@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.Player;
 import com.uts.Online.Booking.App.model.User;
 
 import jakarta.servlet.http.HttpSession;
@@ -83,33 +84,54 @@ public class AuthController {
     public String RegisterUser(@RequestParam("firstName") String fname, @RequestParam("lastName") String lname, @RequestParam("email") String email, @RequestParam("password") String password, 
     @RequestParam("phoneNumber") String phoneNumber, Model m, HttpSession session){
 
+        System.out.println("=== REGISTRATION ATTEMPT ===");
+        System.out.println("Name: " + fname + " " + lname);
+        System.out.println("Email: " + email);
+        System.out.println("Phone: " + phoneNumber);
+
+        // Validation: Check if email already exists
         if(userDAO.findByEmail(email).isPresent()){
+            System.out.println("ERROR: Email already exists");
+            m.addAttribute("error", "Email already exists!");
+            m.addAttribute("firstName", fname);
+            m.addAttribute("lastName", lname);
+            m.addAttribute("phoneNumber", phoneNumber);
+            return "register";
+        } 
+
+        if(userDAO.findByEmail(email).isPresent()){
+            System.out.println("ERROR: Email Existst");
             m.addAttribute("error", "Email already exists!");
             return "register";
         } 
 
         if(password.length() < 8){
+            System.out.println("ERROR: Password too short");
             m.addAttribute("error", "Password must be at least 8 characters long");
             return "register";
         }
 
         if(phoneNumber.length() < 10 || phoneNumber.length() > 15 || phoneNumber.matches(".*[a-zA-Z]+.*")){
+            System.out.println("ERROR: Phone number is invalid");
             m.addAttribute("error", "Phone number is invalid");
             return "register";
         }
 
-        User newUser = new User();
+        //create new player by default
+        Player newUser = new Player();
         newUser.setFirstName(fname);
         newUser.setLastName(lname);
         newUser.setEmail(email);
         newUser.setPassword(passwordEncoder.encode(password));
         newUser.setPhoneNumber(phoneNumber);
+        newUser.setCreditBalance(0.0);
             
         //generate activation token
         String token = java.util.UUID.randomUUID().toString();
         newUser.setActivationToken(token);
         newUser.setActive(false);
 
+        //save the user to the database
         userDAO.save(newUser);
 
         //send notification
