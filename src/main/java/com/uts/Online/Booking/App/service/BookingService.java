@@ -56,7 +56,7 @@ public class BookingService {
                 if (parts.length != 3) {
                     return 0.0;
                 }
-                
+
                 Long courtId = Long.parseLong(parts[0]);
                 Court court = courtDAO.findById(courtId).orElse(null);
                 return court != null ? court.getHourlyRate() : 0.0;
@@ -68,12 +68,12 @@ public class BookingService {
     public Booking createBooking(Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
         logger.info("Creating booking - Court: {}, Timeslot: {}, Date: {}, User: {}", 
             courtId, timeslotId, bookingDate, userId);
-        
+
         // Validate inputs
         if (courtId == null || timeslotId == null || bookingDate == null || userId == null) {
             throw new IllegalArgumentException("All booking parameters are required");
         }
-        
+
         Court court = courtDAO.findById(courtId)
             .orElseThrow(() -> new RuntimeException("Court not found with ID: " + courtId));
         Timeslot timeslot = timeslotDAO.findById(timeslotId)
@@ -121,14 +121,14 @@ public class BookingService {
     public Booking updateBooking(Long bookingId, Long courtId, Long timeslotId, LocalDate bookingDate, Long userId) {
         logger.info("Updating booking {} - Court: {}, Timeslot: {}, Date: {}, User: {}", 
             bookingId, courtId, timeslotId, bookingDate, userId);
-        
+
         // Validate inputs
         if (bookingId == null || courtId == null || timeslotId == null || bookingDate == null || userId == null) {
             throw new IllegalArgumentException("All booking parameters are required");
         }
-        
+
         Booking existingBooking = getBookingById(bookingId);
-        
+
         Court court = courtDAO.findById(courtId)
             .orElseThrow(() -> new RuntimeException("Court not found with ID: " + courtId));
         Timeslot timeslot = timeslotDAO.findById(timeslotId)
@@ -161,14 +161,14 @@ public class BookingService {
         if (bookingId == null) {
             throw new IllegalArgumentException("Booking ID cannot be null");
         }
-        
+
         logger.info("Deleting booking with ID: {}", bookingId);
-        
+
         // Verify booking exists before attempting to delete
         if (!bookingDAO.existsById(bookingId)) {
             throw new RuntimeException("Booking not found with ID: " + bookingId);
         }
-        
+
         bookingDAO.deleteById(bookingId);
         logger.info("Successfully deleted booking with ID: {}", bookingId);
     }
@@ -185,10 +185,10 @@ public class BookingService {
         if (courtId == null || timeslotId == null || date == null || excludeBookingId == null) {
             return false;
         }
-        
+
         List<Booking> existingBookings = bookingDAO.findByCourtCourtIdAndTimeslotTimeslotIdAndBookingDate(
             courtId, timeslotId, date);
-        
+
         return existingBookings.stream()
             .anyMatch(booking -> !booking.getBookingId().equals(excludeBookingId));
     }
@@ -196,26 +196,26 @@ public class BookingService {
     // Generate a availability map
     public Map<String, Boolean> getAvailabilityMap(Long venueId, LocalDate date, List<Court> courts, List<Timeslot> timeslots) {
         logger.info("=== Generating availability map for venue {} on {} ===", venueId, date);
-        
+
         Map<String, Boolean> availability = new HashMap<>();
-        
+
         if (courts == null || timeslots == null) {
             logger.warn("Null courts or timeslots provided to getAvailabilityMap");
             return availability;
         }
-        
+
         // Get all bookings for this date to check efficiently
         List<Booking> bookingsForDate = bookingDAO.findByBookingDate(date);
         logger.info("Found {} bookings for date {}", bookingsForDate.size(), date);
-        
+
         for (Court court : courts) {
             if (court == null) continue;
-            
+
             for (Timeslot timeslot : timeslots) {
                 if (timeslot == null) continue;
-                
+
                 String key = court.getCourtId() + "-" + timeslot.getTimeslotId();
-                
+
                 // Check if this specific court timeslot combination is booked
                 boolean isBooked = bookingsForDate.stream()
                     .anyMatch(booking -> 
@@ -224,16 +224,16 @@ public class BookingService {
                         booking.getCourt().getCourtId().equals(court.getCourtId()) && 
                         booking.getTimeslot().getTimeslotId().equals(timeslot.getTimeslotId())
                     );
-                
+
                 boolean isAvailable = !isBooked;
-                
+
                 logger.info("Slot {} (Court ID: {}, Timeslot ID: {}) - Booked: {}, Available: {}", 
                     key, court.getCourtId(), timeslot.getTimeslotId(), isBooked, isAvailable);
-                
+
                 availability.put(key, isAvailable);
             }
         }
-        
+
         logger.info("=== Generated availability map with {} entries ===", availability.size());
         return availability;
     }
@@ -281,7 +281,7 @@ public class BookingService {
         Booking booking = getBookingById(bookingId);
         Timeslot newTimeslot = timeslotDAO.findById(newTimeslotId)
             .orElseThrow(() -> new RuntimeException("Timeslot not found"));
-        
+
         //check if new timeslot is available
         if(isSlotBookedExcluding(booking.getCourt().getCourtId(), newTimeslotId, newDate, bookingId)){
             throw new RuntimeException("The selected time slot is already booked");

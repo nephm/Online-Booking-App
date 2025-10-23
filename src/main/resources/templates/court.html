@@ -79,7 +79,7 @@
         <!-- Hidden fields for edit mode -->
         <input th:if="${editMode}" type="hidden" name="editBookingId" th:value="${editBookingId}">
         <input th:if="${editMode}" type="hidden" name="originalUserId" th:value="${originalUserId}">
-        
+
         <table id="bookingTable">
             <thead>
                 <tr>
@@ -92,7 +92,7 @@
                     <td class="court-label">
                         <span th:text="${court.courtName}"></span>
                     </td>
-    
+
                     <td th:each="slot : ${timeSlots}" th:with="slotKey=${court.courtId + '-' + slot.timeslotId}">
                         <input type="checkbox"
                             name="selectedSlots"
@@ -104,7 +104,7 @@
                 </tr>
             </tbody>
         </table>
-    
+
         <div style="margin-top: 20px; text-align: center;">
             <button type="submit" class="proceed-btn" th:text="${submitButtonText ?: 'Proceed to Book'}">Proceed to Book</button>
             <a th:if="${editMode}" th:href="@{/admin}" class="proceed-btn" style="background: #6b7280; margin-left: 10px; text-decoration: none; display: inline-block;">Cancel</a>

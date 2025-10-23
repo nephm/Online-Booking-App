@@ -50,7 +50,7 @@ public class CourtController {
                                 @RequestParam(required = false) Long originalUserId,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
-        
+
         // Get venue info first
         Venue venue = venueDAO.findById(venueId).orElse(null);
         if (venue == null) {
@@ -120,14 +120,14 @@ public class CourtController {
 
         // Check for edit mode prioritize request parameters over flash attributes
         boolean isEditMode = editBookingId != null || model.containsAttribute("editMode");
-        
+
         if (isEditMode) {
             // Use request params if available, otherwise fall back to flash attributes
             Long bookingId = editBookingId != null ? editBookingId : (Long) model.asMap().get("editBookingId");
             Long courtId = originalCourtId != null ? originalCourtId : (Long) model.asMap().get("originalCourtId");
             Long timeslotId = originalTimeslotId != null ? originalTimeslotId : (Long) model.asMap().get("originalTimeslotId");
             Long userId = originalUserId != null ? originalUserId : (Long) model.asMap().get("originalUserId");
-            
+
             // Validate that we have all required edit parameters
             if (bookingId == null || courtId == null || timeslotId == null || userId == null) {
                 logger.error("Missing edit parameters - bookingId: {}, courtId: {}, timeslotId: {}, userId: {}", 
@@ -170,11 +170,11 @@ public class CourtController {
                 model.addAttribute("pageTitle", "Edit Booking - " + venue.getVenueName());
                 model.addAttribute("submitButtonText", "Update Booking");
                 model.addAttribute("submitAction", "/admin/update-booking");
-                
+
                 String originalSlotKey = courtId + "-" + timeslotId;
                 model.addAttribute("preSelectedSlot", originalSlotKey);
                 logger.info("Edit mode active for booking {}, preSelectedSlot: {}", bookingId, originalSlotKey);
-                
+
             } catch (Exception e) {
                 logger.error("Error loading booking for edit: {}", bookingId, e);
                 redirectAttributes.addFlashAttribute("error", "Error loading booking: " + e.getMessage());

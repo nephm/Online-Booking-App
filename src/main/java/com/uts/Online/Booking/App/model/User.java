@@ -7,7 +7,6 @@ import java.io.Serializable;
 @Table(name ="users", schema ="dbo")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable{
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="userID")
@@ -34,7 +33,6 @@ public class User implements Serializable{
     @Column(name="activation_token")
     private String activationToken;
 
-    // Constructors
     public User() {}
 
     public User(String firstName, String lastName, String email, String password, String phoneNumber) {
@@ -45,7 +43,6 @@ public class User implements Serializable{
         this.phoneNumber = phoneNumber;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

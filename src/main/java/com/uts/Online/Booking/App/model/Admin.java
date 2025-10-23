@@ -8,9 +8,8 @@ import jakarta.persistence.*;
 public class Admin extends User{
 
     public Admin(){ super(); }
-    
+
     public Admin(String firstName, String lastName, String email, String password, String phoneNumber){
         super(firstName, lastName, email, password, phoneNumber);
     }
-    
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 @PrimaryKeyJoinColumn(name = "userId")
 @Table(name ="players", schema ="dbo")
 public class Player extends User {
-
     @Column(name="payment_id")
     private Long paymentId;
 

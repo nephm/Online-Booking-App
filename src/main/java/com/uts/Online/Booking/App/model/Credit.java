@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Credit")
 public class Credit {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long creditId;
@@ -73,5 +72,4 @@ public class Credit {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
 }

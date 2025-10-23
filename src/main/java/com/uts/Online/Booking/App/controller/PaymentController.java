@@ -36,7 +36,7 @@ public class PaymentController {
 
     @Autowired
     private JavaMailSender mailSender;
-    
+
     private final PaymentDAO paymentDAO;
     private final UserDAO userDAO;
     private final BookingService bookingService;
@@ -91,8 +91,6 @@ public class PaymentController {
     //get all payment history
     @GetMapping("/myPayments")
     public String getPaymentHistory(Model m){
-        
-       
         if(getUser() != null){
             List<Payment> payments = paymentDAO.findByUserId(getUser().getId());
             m.addAttribute("payments", payments);
@@ -108,7 +106,6 @@ public class PaymentController {
     public String processPayment(@RequestParam Long bookingId, @RequestParam Double amount, @RequestParam(defaultValue = "0") Double creditApplied, @RequestParam(required = false) String creditCardNumber,
                 @RequestParam(required = false) String creditCardExpiry, @RequestParam(required = false) String creditCardSecurityCode, Model m) {
 
-        
         if(getUser() == null){
             m.addAttribute("user", getUser());
             return "payment/error";
@@ -133,7 +130,7 @@ public class PaymentController {
             player.setCreditBalance(player.getCreditBalance() - creditApplied);
             userDAO.save(player);
         }
-        
+
         //handle credit card payment
         Payment payment = new Payment();
         payment.setBookingId(bookingId);
@@ -174,6 +171,7 @@ public class PaymentController {
                 mailSender.send(message);
 
                 System.out.println("Confirmation email sent directly to " + u.getEmail());
+                System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());
             } catch (Exception e) {
                 System.out.println("Failed to send confirmation email: " + e.getMessage());
                 e.printStackTrace();
@@ -185,5 +183,4 @@ public class PaymentController {
             return "payment_failed";
         }
     }
-
 }
