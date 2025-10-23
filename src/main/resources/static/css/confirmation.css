@@ -183,13 +183,11 @@
     margin-bottom: 0.3rem;
 }
 
-/* Status styling */
 .booking-info-value[style*="color: #28a745"] {
     color: #22c55e !important;
     font-weight: bold;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .confirmation-container {
         margin: 1rem;

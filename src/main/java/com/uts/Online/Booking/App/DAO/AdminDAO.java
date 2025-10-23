@@ -10,5 +10,4 @@ import com.uts.Online.Booking.App.model.Admin;
 
 public interface AdminDAO extends JpaRepository<Admin, Long> {
     boolean existsById(@NonNull Long Id);
-    
 }
