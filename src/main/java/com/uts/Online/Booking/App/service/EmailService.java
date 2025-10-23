@@ -24,6 +24,6 @@ public class EmailService {
         message.setText("Thank you for booking with CourtBooker! Your booking has been confirmed.");
 
         mailSender.send(message);
-        System.out.println("✅ Confirmation email sent to " + to);
+        System.out.println("Confirmation email sent to " + to);
     }
 }
