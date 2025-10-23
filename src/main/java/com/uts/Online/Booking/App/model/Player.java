@@ -3,6 +3,7 @@ package com.uts.Online.Booking.App.model;
 import jakarta.persistence.*;
 
 @Entity
+@PrimaryKeyJoinColumn(name = "userId")
 @Table(name ="players", schema ="dbo")
 public class Player extends User {
 
