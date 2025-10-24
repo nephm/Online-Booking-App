@@ -3,6 +3,7 @@ package com.uts.Online.Booking.App;
 import com.uts.Online.Booking.App.DAO.PaymentDAO;
 import com.uts.Online.Booking.App.DAO.UserDAO;
 import com.uts.Online.Booking.App.config.SecurityConfig;
+import com.uts.Online.Booking.App.controller.AuthController;
 import com.uts.Online.Booking.App.controller.PaymentController;
 import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.Court;
@@ -62,6 +63,9 @@ public class PaymentControllerTest{
 
     @MockitoBean
     private CustomerDetailsService uService;
+
+    @MockitoBean
+    private AuthController authController;
 
     @MockitoBean
     private JavaMailSender mailSender;
