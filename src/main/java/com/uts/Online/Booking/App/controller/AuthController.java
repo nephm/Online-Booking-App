@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.uts.Online.Booking.App.DAO.UserDAO;
+import com.uts.Online.Booking.App.model.Booking;
 import com.uts.Online.Booking.App.model.User;
 
 import jakarta.servlet.http.HttpSession;
@@ -144,5 +145,49 @@ public class AuthController {
         m.addAttribute("user", user);
         return "profile";
     }
-    
+
+    //send booking confirmation email
+    public void sendBookingConfirmationEmail(User user, Booking booking, Double totalAmount) {
+        try {
+            if (user == null || user.getEmail() == null || booking == null) {
+                System.out.println("Cannot send booking confirmation: user, email, or booking is null.");
+                return;
+            }
+
+            String courtName = (booking.getCourt() != null) ? booking.getCourt().getCourtName() : "N/A";
+            String venueName = (booking.getCourt() != null && booking.getCourt().getVenue() != null)
+                    ? booking.getCourt().getVenue().getVenueName() : "N/A";
+            String timeLabel = (booking.getTimeslot() != null && booking.getTimeslot().getStartTime() != null)
+                    ? booking.getTimeslot().getStartTime().toString() : "N/A";
+
+                String body = String.format(
+                "Hello %s,\n\n" +
+                "Thank you for booking with CourtBooker! Your booking has been successfully confirmed.\n\n" +
+                "Date: %s\n" +
+                "Time: %s\n" +
+                "Venue: %s\n" +
+                "Court: %s\n" +
+                "Total Amount: $%.2f\n\n" +
+                "We look forward to seeing you at your scheduled time!\n\n" +
+                "– The CourtBooker Team",
+                (user.getFirstName() != null ? user.getFirstName() : "there"),
+                booking.getBookingDate(),
+                timeLabel,
+                venueName,
+                courtName,
+                totalAmount
+            );
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(user.getEmail());
+            message.setSubject("CourtBooker – Booking Confirmation");
+            message.setText(body);
+            mailSender.send(message);
+
+            System.out.println("Booking confirmation email sent to " + user.getEmail());
+        } catch (Exception e) {
+            System.out.println("Failed to send booking confirmation email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
