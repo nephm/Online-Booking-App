@@ -37,6 +37,9 @@ public class PaymentController {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private AuthController authController;
+
     private final PaymentDAO paymentDAO;
     private final UserDAO userDAO;
     private final BookingService bookingService;
@@ -159,23 +162,10 @@ public class PaymentController {
         if("SUCCESS".equals(saved_payment.getStatus())){
             bookingService.updateBookingStatus(bookingId, "CONFIRMED");
 
-            try {
-                User u = getUser();
-
-                // Build simple confirmation email
-                org.springframework.mail.SimpleMailMessage message = new org.springframework.mail.SimpleMailMessage();
-                message.setTo(u.getEmail());
-                message.setSubject("Booking Confirmation");
-                message.setText("Thank you for booking with CourtBooker! Your booking has been confirmed.");
-
-                mailSender.send(message);
-
-                System.out.println("Confirmation email sent directly to " + u.getEmail());
-                System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());System.out.println("Confirmation email sent directly to " + u.getEmail());
-            } catch (Exception e) {
-                System.out.println("Failed to send confirmation email: " + e.getMessage());
-                e.printStackTrace();
-            }
+            //send booking confirmation email after payment success
+            User u = getUser();
+            Booking booking = bookingService.getBookingById(bookingId);
+            authController.sendBookingConfirmationEmail(u, booking, amount);
 
             return "redirect:/booking-confirmation";
         } else{
